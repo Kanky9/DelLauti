@@ -1,0 +1,179 @@
+*{
+    box-sizing: border-box;
+    text-decoration: none;
+}
+
+.items__menu--responsive{
+    display: none;
+}
+
+.cont {
+    position: relative;
+    height: 95vh;
+    width: 100%;
+    background-image: url('../../../../assets/img/img-menu/delLautiFondo.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
+    background-position: center;
+    overflow: hidden;
+}
+
+.cont::after {
+    margin: 0;
+    padding: 0;
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 60px; /* Altura de las ondas */
+    background-color: #fff; /* Color de las ondas */
+    z-index: 1; /* Coloca las ondas detrás del contenido principal */
+    border-radius: 50% 50% 0 0; /* Forma ondulada */
+}
+
+.flex{
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+}
+
+
+.items__menu--container{
+    width: 100%;
+    display: flex;
+    text-align: center;
+    justify-content: center;
+    padding: 0;
+    margin: 0;
+}
+
+.items__nav{
+    text-align: center; 
+    margin: 0;
+}
+
+.items__ul{ 
+    width: 600px;
+    text-align: center;
+}
+
+.items__li{
+    display: table-cell; 
+    padding: 15px 0;
+}
+
+.items{
+    text-align: center;
+    flex-wrap: wrap;
+    color: #fff;
+    text-transform: uppercase;
+    text-decoration: none;
+    letter-spacing: 0.15em;     
+    display: inline-block;
+    padding: 15px 20px;
+    position: relative;
+}
+
+.items:after{
+    background: none repeat scroll 0 0 transparent;
+    bottom: 0;
+    content: "";
+    display: block;
+    height: 3px;
+    left: 50%;
+    position: absolute;
+    background: #fff;
+    transition: 0.3s ease 0s, left 0.3s ease 0s;
+    width: 0;
+}
+
+.items:hover:after{
+    width: 100%; 
+    left: 0;
+    background-color: #F4D508;
+}
+
+
+
+@media screen and (max-width: 745px){
+
+    .flex{
+        display: none;
+    }
+
+    .flex__responsive{
+        display: flex;
+        width: 100%;
+        transition: all 2s;
+    }
+
+    .navbar{
+        width: 100%;
+        background: transparent;
+        justify-content: start;
+        align-items: start;
+        height: 70vh;
+        transition: all 2s;
+    }
+
+    .active{
+        z-index: 10;
+        background: #ffdd00bc;
+        color: #000;
+        transition: all 2s;
+    }
+
+   .navbar-collapse{
+    transition: all 1s;
+   }
+   
+    .navbar-toggler{
+        background: #F4D508;
+        color: #303030;
+    }
+
+    .nav-item{
+        width: max-content;
+        padding: 5px;
+        background: transparent;
+        transition: all 2s;
+    }
+
+    .nav-link{
+        padding: 10px;
+        border-radius: 50px;
+        background: #F4D508;
+        font-weight: 600;
+        transition: all 2s;
+    }
+}
+
+@media screen and (max-width: 712px){
+    .cont { 
+        background-image: url('../../../../assets/img/img-menu/delLautiFondoResponsive.png');
+    }
+}
+
+@media screen and (max-width: 460px){
+    
+    .cont {
+        background-image: url('../../../../assets/img/img-menu/delLautiFondoResponsive2.png');
+    }
+}
+
+@media screen and (max-width: 370px){
+    
+    .cont {
+        background-image: url('../../../../assets/img/img-menu/delLautiFondoResponsive3.png');
+    }
+}
+
+@media screen and (max-width: 300px){
+    
+    .cont {
+        background-image: url('../../../../assets/img/img-menu/delLautiFondoResponsive4.png');
+    }
+}

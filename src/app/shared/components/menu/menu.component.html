@@ -1,0 +1,60 @@
+<section class="cont">
+
+    <div class="flex">
+
+        <div class="items__menu--container">
+            <nav class="items__nav">
+                <ul class="ul">
+                    <li class="items__li">
+                        <a routerLink="/inicio" class="items items--1">Inicio</a>
+                    </li>
+
+                    <li class="items__li">
+                        <a routerLink="/turnos" (click)="scrollToBottomTurnos()" class="items items--2">Turnos</a>
+                    </li>
+
+                    <li class="items__li">
+                        <a routerLink="/ayuda" (click)="scrollToBottomAyuda()" class="items items--2">Ayuda</a>
+                    </li>
+
+                    <li class="items__li">
+                        <a href="https://wa.me/543462334472?text=Hola,%20tenes%20turnos%20disponibles?" target="_blank"
+                            class="items items--3">Contactame</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <div class="flex__responsive">
+        <nav class="navbar navbar-expand-lg " [ngClass]="{'active': isClicked}">
+            <div class="container-fluid">
+                <button (click)="onElementClick()" class="navbar-toggler mb-2" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
+                    aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" routerLink="/inicio">Inicio</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" (click)="scrollToBottomTurnos()"
+                                routerLink="/turnos">Turnos</a>
+                        </li>
+                        <li class="nav-item">
+                            <a routerLink="/ayuda" (click)="scrollToBottomAyuda()" class="nav-link active"
+                                aria-current="page">Ayuda</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page"
+                                href="https://wa.me/543462334472?text=Hola,%20tenes%20turnos%20disponibles?"
+                                target="_blank">Contactame</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </div>
+</section>
