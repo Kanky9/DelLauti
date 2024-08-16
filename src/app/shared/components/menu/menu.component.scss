@@ -11,7 +11,7 @@
     position: relative;
     height: 95vh;
     width: 100%;
-    background-image: url('../../../../assets/img/img-menu/delLautiFondo.png');
+    background-image: url('../../../../../public/assets/img/img-menu/delLautiFondo.png');
     background-repeat: no-repeat;
     background-size: cover;
     background-attachment: fixed;
@@ -153,27 +153,27 @@
 
 @media screen and (max-width: 712px){
     .cont { 
-        background-image: url('../../../../assets/img/img-menu/delLautiFondoResponsive.png');
+        background-image: url('../../../../../public/assets/img/img-menu/delLautiFondoResponsive.png');
     }
 }
 
 @media screen and (max-width: 460px){
     
     .cont {
-        background-image: url('../../../../assets/img/img-menu/delLautiFondoResponsive2.png');
+        background-image: url('../../../../../public/assets/img/img-menu/delLautiFondoResponsive2.png');
     }
 }
 
 @media screen and (max-width: 370px){
     
     .cont {
-        background-image: url('../../../../assets/img/img-menu/delLautiFondoResponsive3.png');
+        background-image: url('../../../../../public/assets/img/img-menu/delLautiFondoResponsive3.png');
     }
 }
 
 @media screen and (max-width: 300px){
     
     .cont {
-        background-image: url('../../../../assets/img/img-menu/delLautiFondoResponsive4.png');
+        background-image: url('../../../../../public/assets/img/img-menu/delLautiFondoResponsive4.png');
     }
 }

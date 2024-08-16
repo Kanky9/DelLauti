@@ -1,0 +1,160 @@
+*{
+    box-sizing: border-box;
+    text-decoration: none;
+}
+
+.cont{
+    width: 100%;
+	max-height: fit-content;
+    height: auto;
+    background: #f2f2f2;
+}
+
+.proyectsClick{
+	display: none; 
+}
+
+.subtitle{
+	font-size: 40px;
+}
+
+.subtitle__container{
+    padding-top: 5px;
+    text-align: center;
+}
+
+.grid{
+	padding: 0 20px 80px 20px;
+    display: grid;
+    width: 100%;
+    height: auto;
+    grid-template-areas: 
+    "img1 img1 img2 img3"
+    "img1 img1 img4 img5" ;
+    gap: 10px;
+}
+
+.proyects__container{
+    position: relative;
+    width: 100%;
+    height: auto;
+    overflow: hidden;
+}
+
+.proyects__img{
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    cursor: pointer;
+}
+
+.proyects__container:nth-of-type(1){
+	grid-area: img1;
+}
+.proyects__container:nth-of-type(2){
+	grid-area: img2;
+}
+.proyects__container:nth-of-type(3){
+	grid-area: img3;
+}
+.proyects__container:nth-of-type(4){
+	grid-area: img4;
+}
+.proyects__container:nth-of-type(5){
+	grid-area: img5;
+}
+
+.proyects__hover{
+	position: absolute;
+	background: #ffdd00bc;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	color: #fff;
+	text-align: center;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	transform: translateX(100%);
+	cursor: pointer;
+	transition: transform .3s ease-in-out;
+}
+
+.proyects__ir{
+	width: 20%;
+	transform: translateX(200%);
+	color: #fff;
+	padding: 3px;
+	font-size: 20px;
+	font-weight: 600;
+	border-radius: 20px;
+	border: 3px solid #fff;
+}
+
+.proyects__ir:hover{
+	background: #fff;
+	color: #000;
+}
+
+.proyects__container:hover .proyects__hover{
+	transform: translateX(0%);
+}
+
+/* Responsive: */
+
+@media screen and (max-width: 865px){
+
+	.proyectsClick{
+        display: block;
+		position: absolute;
+        bottom: -20px;
+        color: #fff;
+        background: linear-gradient(rgba(255, 255, 255, 0), rgba(0, 0, 0, 1));
+        width: 100%;
+        text-align: center;
+        padding: 10px;
+	}
+
+	.grid{
+		grid-template-areas: 
+		"img3 img3 img2 img2"
+		"img1 img1 img1 img1"
+		"img4 img4 img5 img5";
+	}
+
+   #mi-imagen:hover + #mi-titulo{
+        visibility: hidden;
+        transition: .2s;
+    }
+}
+
+
+@media screen and (max-width: 467px){
+    .grid{
+		grid-template-areas:
+		"img1"
+		"img2"
+		"img3"
+		"img4"
+		"img5";
+		height: auto;
+		grid-template-rows: repeat(5, auto);
+		grid-auto-rows: 250px;
+		gap: 10px;
+	}
+
+}
+
+@media screen and (max-width: 250px){
+	.proyectsClick{
+		font-size: 17px;
+	}
+}
+
+@media screen and (min-width: 1600px){
+	.grid{
+		grid-template-areas: 
+			"img2 img3 img1 img4 img5";	
+	}
+}
