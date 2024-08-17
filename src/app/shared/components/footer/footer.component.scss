@@ -1,0 +1,87 @@
+*{
+    box-sizing: border-box;
+    text-decoration: none;
+}
+
+.cont{
+    width: 100%;
+    background: linear-gradient(to top, #f09819, #edde5d);
+}
+
+.flex{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+}
+
+.contactos__nav a{
+    font-weight: 500;
+    font-size: 30px;
+    color: #303030;
+    padding: 10px;
+}
+
+
+.contactos__nav a:hover{
+    border-radius: 50px;
+    
+    background: #303030;
+    color: #edde5d;
+}
+
+.copyright{
+    font-size: 1em;
+    font-weight: 500;
+    color: #303030;
+}
+
+
+.contactos__container{
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+.nav{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    text-align: center;
+    margin-top: 25px;
+    margin-bottom: 25px;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.nav a{
+    font-size: 1em;
+    font-weight: 500;
+    color: #303030;
+}
+
+.nav a:hover{
+    opacity: .8;
+}
+
+/*
+
+.fa-instagram:hover{
+    background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285aeb 90%);
+    padding: 1px 3px 1px 3px;
+    border-radius: 30%;
+    font-size: 28px;
+    color: #f3f3f3;
+}
+
+.fa-whatsapp:hover{
+    background: #25d366;
+    padding: 1px 3px 1px 3px;
+    border-radius: 30%;
+    font-size: 28px;
+    color: #f3f3f3;
+}
+
+*/
