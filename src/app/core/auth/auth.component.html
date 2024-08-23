@@ -1,0 +1,81 @@
+<section class="background">
+    <div class="back-link">
+        <a [routerLink]="['/home']" routerLinkActive="router-link-active">
+            <i class="fa fa-arrow-left"></i>
+        </a>
+    </div>
+    <div class="cont" id="cont">
+        <div class="form-cont sign-up">
+            <form>
+                <h1 class="title">Crear cuenta</h1>
+                <div class="social-icons">
+                    <a href="#" class="icon"><i class="fa-brands fa-google-plus-g"></i></a>
+                </div>
+                <span>O usa tu email para registrarte</span>
+
+                <div class="inputGroup">
+                    <label class="label" for="name">Nombre</label>
+                    <input class="input" type="text" >
+                </div>
+                
+                <div class="inputGroup">
+                    <label class="label" for="name">Email</label>
+                    <input class="input" type="email" >
+                </div>
+                
+                <div class="inputGroup">
+                    <label class="label" for="register-password">Contraseña</label>
+                    <div class="password-wrapper">
+                        <input class="input" type="password" id="register-password" name="password">
+                        <button type="button" id="toggleRegisterPassword" class="toggle-password">
+                            <i class="fa fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <button>Crear</button>
+            </form>
+        </div>
+        <div class="form-cont sign-in">
+            <form>
+                <h1 class="title">Iniciar sesión</h1>
+                <div class="social-icons">
+                    <a href="#" class="icon"><i class="fa-brands fa-google-plus-g"></i></a>
+                </div>
+                <span>O ingresa con tu email y contraseña</span>
+
+                <div class="inputGroup">
+                    <label class="label" for="name">Email</label>
+                    <input class="input" type="email">
+                </div>
+                
+                <div class="inputGroup">
+                    <label class="label" for="login-password">Contraseña</label>
+                    <div class="password-wrapper">
+                        <input class="input" type="password" id="login-password" name="password">
+                        <button type="button" id="toggleLoginPassword" class="toggle-password">
+                            <i class="fa fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <a href="#">¿Olvidó su contraseña?</a>
+                <button>Sign In</button>
+            </form>
+        </div>
+        <div class="toggle-cont">
+            <div class="toggle">
+                <div class="toggle-panel toggle-left">
+                    <h1>Hola, Bienvenido!</h1>
+                    <p>Si ya posees una cuenta, ve a iniciar sesión para continuar.</p>
+                    <button class="hidden" id="login">Iniciar sesión</button>
+                </div>
+                <div class="toggle-panel toggle-right">
+                    <h1>Hola, Bienvenido!</h1>
+                    <p>Si aún no tienes una cuenta, puedes crearla a continuación.</p>
+                    <button class="hidden" id="register">Crear cuenta</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

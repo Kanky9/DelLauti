@@ -1,11 +1,14 @@
-import { NgClass } from '@angular/common';
+import { CommonModule, NgClass } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-menu',
   standalone: true,
   imports: [
+    CommonModule,
     NgClass,
+    RouterLink,
   ],
   templateUrl: './menu.component.html',
   styleUrl: './menu.component.scss'
