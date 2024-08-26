@@ -1,6 +1,7 @@
 import { CommonModule, NgClass } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, computed, inject, OnInit, Signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-menu',
@@ -16,9 +17,20 @@ import { RouterLink } from '@angular/router';
 export class MenuComponent implements OnInit{
  
   isClicked: boolean = false; 
-  
-  ngOnInit(): void {
+    isAuthenticated: Signal<boolean>;
 
+  private _authService = inject(AuthService);
+
+  constructor(private authService: AuthService) {
+    this.isAuthenticated = computed(() => !!this._authService.user$());
+  }
+
+  ngOnInit(): void {
+    
+  }
+
+  logout() {
+    this._authService.logout();
   }
   
   onElementClick() {
