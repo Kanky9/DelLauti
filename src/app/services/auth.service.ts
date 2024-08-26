@@ -1,5 +1,5 @@
 import { inject, Injectable, Signal, signal } from '@angular/core';
-import { Auth, createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, signOut } from '@angular/fire/auth';
+import { Auth, createUserWithEmailAndPassword, GoogleAuthProvider, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signOut } from '@angular/fire/auth';
 import { doc, Firestore, getDoc, setDoc } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
 import { UserModel } from '../models/user.interface';
@@ -14,6 +14,8 @@ export class AuthService {
   private _firestore = inject(Firestore);
   private _router = inject(Router);
   private _snackBar = inject(MatSnackBar);
+
+  private _googleProvider = new GoogleAuthProvider();
 
   private user = signal<UserModel | null>(null);
   public user$: Signal<UserModel | null> = this.user;
@@ -36,6 +38,45 @@ export class AuthService {
         this.user.set(null);
       }
     });
+  }
+
+  // * Método para iniciar sesión con Google
+  async loginWithGoogle(): Promise<void> {
+    try {
+      const result = await signInWithPopup(this._auth, this._googleProvider);
+      const user = result.user;
+
+      const userModel: UserModel = {
+        id: user.uid,
+        name: user.displayName || '',
+        email: user.email || '',
+        admin: false
+      };
+
+      await setDoc(doc(this._firestore, `users/${user.uid}`), userModel);
+
+      this.user.set(userModel);
+      
+      this._snackBar.open(`Bienvenido ${this.user()!.name}`, 'Cerrar', {
+        duration: 3000,
+        panelClass: ['snackbar-success']
+      });
+      console.log(`Inicio de sesión con Google exitoso para: ${this.user()!.name}`);
+      this._router.navigate(['/home']);
+    } catch (error) {
+      this._snackBar.open('Error al iniciar sesión con Google', 'Cerrar', {
+        duration: 3000,
+        panelClass: ['snackbar-error']
+      });
+      console.error('Error al iniciar sesión con Google', error);
+    }
+  }
+
+  // * Método para registrar con Google
+  async registerWithGoogle(): Promise<void> {
+    // Usualmente, el registro con Google se maneja igual que el inicio de sesión,
+    // así que puedes usar loginWithGoogle para el registro también
+    await this.loginWithGoogle();
   }
 
   // * Método para registrar un usuario nuevo

@@ -77,6 +77,16 @@ export class AuthComponent implements OnInit{
     });
   }
 
+  // * Método para manejar el registro con Google
+  async onRegisterWithGoogle(): Promise<void> {
+    await this._authService.registerWithGoogle();
+  }
+
+  // * Método para manejar el inicio de sesión con Google
+  async onLoginWithGoogle(): Promise<void> {
+    await this._authService.loginWithGoogle();
+  }
+
   // * Método para manejar el registro
   async onRegister(): Promise<void> {
     if (this.registerForm.valid) {
