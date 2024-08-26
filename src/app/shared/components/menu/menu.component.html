@@ -28,7 +28,7 @@
                                 class="items items--3">Iniciar sesión</a>
                         </li>
                     } @else if(isAuthenticated()){
-                        <li class="items__li" *ngIf="isAuthenticated" (click)="logout()">
+                        <li class="items__li" (click)="logout()">
                             <a class="items items--3">Cerrar sesión</a>
                         </li>
                     }
@@ -69,13 +69,10 @@
                                 <a [routerLink]="['/auth']" routerLinkActive="router-link-active" class="nav-link active">Iniciar sesión</a>
                             </li>
                         } @else if(isAuthenticated()){
-                            <li class="nav-item" *ngIf="isAuthenticated" (click)="logout()">
+                            <li class="nav-item" (click)="logout()">
                                 <a class="nav-link active">Cerrar sesión</a>
                             </li>
                         }
-                        <li class="nav-item">
-                            <a [routerLink]="['/auth']" routerLinkActive="router-link-active" class="nav-link active">Iniciar sesión</a>
-                        </li>
                     </ul>
                 </div>
             </div>
