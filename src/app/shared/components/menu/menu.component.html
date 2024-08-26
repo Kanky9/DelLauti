@@ -64,6 +64,15 @@
                                 href="https://wa.me/543462334472?text=Hola,%20tenes%20turnos%20disponibles?"
                                 target="_blank">Contactame</a>
                         </li>
+                        @if(!isAuthenticated()){
+                            <li class="nav-item">
+                                <a [routerLink]="['/auth']" routerLinkActive="router-link-active" class="nav-link active">Iniciar sesión</a>
+                            </li>
+                        } @else if(isAuthenticated()){
+                            <li class="nav-item" *ngIf="isAuthenticated" (click)="logout()">
+                                <a class="nav-link active">Cerrar sesión</a>
+                            </li>
+                        }
                         <li class="nav-item">
                             <a [routerLink]="['/auth']" routerLinkActive="router-link-active" class="nav-link active">Iniciar sesión</a>
                         </li>
