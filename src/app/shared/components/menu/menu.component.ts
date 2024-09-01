@@ -21,7 +21,7 @@ export class MenuComponent implements OnInit{
 
   private _authService = inject(AuthService);
 
-  constructor(private authService: AuthService) {
+  constructor() {
     this.isAuthenticated = computed(() => !!this._authService.user$());
   }
 

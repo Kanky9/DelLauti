@@ -12,6 +12,11 @@ export const routes: Routes = [
   },
 
   {
+    path: 'forgot-password',
+    loadComponent: () => import('./core/auth/forgot-password/forgot-password.component').then( m => m.ForgotPasswordComponent)
+  },
+
+  {
     path: '**',
     redirectTo: 'home',
     pathMatch: 'full',

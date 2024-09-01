@@ -18,7 +18,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
   templateUrl: './auth.component.html',
   styleUrl: './auth.component.scss'
 })
-export class AuthComponent implements OnInit{
+export class AuthComponent implements OnInit {
 
   registerForm!: FormGroup;
   loginForm!: FormGroup;
@@ -26,7 +26,7 @@ export class AuthComponent implements OnInit{
   private _authService = inject(AuthService);
   private _fb = inject(FormBuilder);
 
-  constructor() { 
+  constructor() {
     this.registerForm = this._fb.group({
       name: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
