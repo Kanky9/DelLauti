@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { AdminGuard } from './guards/admin.guard';
 
 export const routes: Routes = [
   {
@@ -18,7 +19,8 @@ export const routes: Routes = [
 
   {
     path: 'publish',
-    loadComponent: () => import('./pages/admin/upload-photo/upload-photo.component').then( m => m.UploadPhotoComponent)
+    loadComponent: () => import('./pages/admin/upload-photo/upload-photo.component').then(m => m.UploadPhotoComponent),
+    canActivate: [AdminGuard]
   },
 
   {

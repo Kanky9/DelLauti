@@ -16,23 +16,23 @@ import { AuthService } from '../../../services/auth.service';
 })
 export class MenuComponent implements OnInit{
  
-  isClicked: boolean = false; 
-    isAuthenticated: Signal<boolean>;
+  isClicked: boolean = false;
+  isAuthenticated: Signal<boolean>;
+  isAdmin: Signal<boolean>;
 
   private _authService = inject(AuthService);
 
   constructor() {
     this.isAuthenticated = computed(() => !!this._authService.user$());
+    this.isAdmin = computed(() => this._authService.user$()?.admin === true);
   }
 
-  ngOnInit(): void {
-    
-  }
+  ngOnInit(): void {}
 
   logout() {
     this._authService.logout();
   }
-  
+
   onElementClick() {
     this.isClicked = !this.isClicked;
   }
@@ -44,5 +44,4 @@ export class MenuComponent implements OnInit{
   scrollToBottomAyuda() {
     window.scrollTo({ top: 700, behavior: 'smooth' });
   }
-  
 }

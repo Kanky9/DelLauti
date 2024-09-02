@@ -13,14 +13,20 @@
                         <a [routerLink]="['/turnos']" routerLinkActive="router-link-active" (click)="scrollToBottomTurnos()" class="items items--2">Turnos</a>
                     </li>
 
-                    <li class="items__li">
+                    <!-- <li class="items__li">
                         <a [routerLink]="['/ayuda']" routerLinkActive="router-link-active" (click)="scrollToBottomAyuda()" class="items items--2">Ayuda</a>
-                    </li>
+                    </li> -->
 
                     <li class="items__li">
                         <a href="https://wa.me/543462334472?text=Hola,%20tenes%20turnos%20disponibles?" target="_blank"
                             class="items items--3">Contactame</a>
                     </li>
+
+                    @if(isAdmin()){
+                        <li class="items__li">
+                            <a [routerLink]="['/publish']" routerLinkActive="router-link-active" class="items">Subir foto</a>
+                        </li>
+                    }
 
                     @if(!isAuthenticated()){
                         <li class="items__li">
@@ -32,11 +38,6 @@
                             <a class="items">Cerrar sesión</a>
                         </li>
                     }
-                    
-                    <li class="items__li">
-                        <a [routerLink]="['/publish']" routerLinkActive="router-link-active"
-                            class="items">Subir foto</a>
-                    </li>
                 </ul>
             </nav>
         </div>
@@ -61,17 +62,22 @@
                                 routerLink="/turnos">Turnos</a>
                         </li>
 
-                        <li class="nav-item">
+                        <!-- <li class="nav-item">
                             <a routerLink="/ayuda" (click)="scrollToBottomAyuda()" class="nav-link active"
                                 aria-current="page">Ayuda</a>
-                        </li>
+                        </li> -->
 
                         <li class="nav-item">
                             <a class="nav-link active" aria-current="page"
                                 href="https://wa.me/543462334472?text=Hola,%20tenes%20turnos%20disponibles?"
                                 target="_blank">Contactame</a>
                         </li>
-
+                        @if(isAdmin()){    
+                            <li class="nav-item">
+                                <a class="nav-link active" aria-current="page" [routerLink]="['/publish']"
+                                    routerLinkActive="router-link-active">Subir foto</a>
+                            </li>
+                        }
                         @if(!isAuthenticated()){
                             <li class="nav-item">
                                 <a [routerLink]="['/auth']" routerLinkActive="router-link-active" class="nav-link active">Iniciar sesión</a>
@@ -81,11 +87,6 @@
                                 <a class="nav-link active">Cerrar sesión</a>
                             </li>
                         }
-
-                        <li class="nav-item">
-                            <a class="nav-link active" aria-current="page"
-                                [routerLink]="['/publish']" routerLinkActive="router-link-active">Contactame</a>
-                        </li>
                     </ul>
                 </div>
             </div>
