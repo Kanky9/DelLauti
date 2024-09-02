@@ -1,5 +1,5 @@
 import { inject, Injectable, Signal, signal } from '@angular/core';
-import { Auth, createUserWithEmailAndPassword, GoogleAuthProvider, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signOut } from '@angular/fire/auth';
+import { Auth, createUserWithEmailAndPassword, GoogleAuthProvider, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signOut, User } from '@angular/fire/auth';
 import { doc, Firestore, getDoc, setDoc } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
 import { UserModel } from '../models/user.interface';
@@ -25,43 +25,52 @@ export class AuthService {
   }
 
   constructor() {
-    onAuthStateChanged(this._auth, (user) => {
-      if (user) {
-        const userModel: UserModel = {
-          id: user.uid,
-          name: user.displayName || '', // Asigna el nombre de Firebase o un string vacío si no está disponible
-          email: user.email || '',
-          admin: false // Si tienes un campo admin en tu base de datos, debes obtenerlo de ahí
-        };
-        this.user.set(userModel);
+    onAuthStateChanged(this._auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        const userData = await this.getUserDataFromFirestore(firebaseUser);
+        this.user.set(userData);
       } else {
         this.user.set(null);
       }
     });
   }
 
+  private async getUserDataFromFirestore(firebaseUser: User): Promise<UserModel> {
+    const userDocRef = doc(this._firestore, `users/${firebaseUser.uid}`);
+    const userSnapshot = await getDoc(userDocRef);
+
+    if (userSnapshot.exists()) {
+        const userData = userSnapshot.data() as UserModel;
+        console.log('User data retrieved:', userData); 
+        return userData;
+    } else {
+        const userModel: UserModel = {
+            id: firebaseUser.uid,
+            name: firebaseUser.displayName || '',
+            email: firebaseUser.email || '',
+            admin: false
+        };
+        await setDoc(userDocRef, userModel);
+        console.log('New user created:', userModel); 
+        return userModel;
+    }
+}
+
+
   // * Método para iniciar sesión con Google
   async loginWithGoogle(): Promise<void> {
     try {
       const result = await signInWithPopup(this._auth, this._googleProvider);
-      const user = result.user;
+      const firebaseUser = result.user;
 
-      const userModel: UserModel = {
-        id: user.uid,
-        name: user.displayName || '',
-        email: user.email || '',
-        admin: false
-      };
+      const userData = await this.getUserDataFromFirestore(firebaseUser);
+      this.user.set(userData);
 
-      await setDoc(doc(this._firestore, `users/${user.uid}`), userModel);
-
-      this.user.set(userModel);
-      
-      this._snackBar.open(`Bienvenido ${this.user()!.name}`, 'Cerrar', {
+      this._snackBar.open(`Bienvenido ${userData.name}`, 'Cerrar', {
         duration: 3000,
         panelClass: ['snackbar-success']
       });
-      console.log(`Inicio de sesión con Google exitoso para: ${this.user()!.name}`);
+      console.log(`Inicio de sesión con Google exitoso para: ${userData.name}`);
       this._router.navigate(['/home']);
     } catch (error) {
       this._snackBar.open('Error al iniciar sesión con Google', 'Cerrar', {
@@ -83,20 +92,20 @@ export class AuthService {
   async register(name: string, email: string, password: string): Promise<void> {
     try {
       const userCredential = await createUserWithEmailAndPassword(this._auth, email, password);
-      const user = userCredential.user;
+      const firebaseUser = userCredential.user;
 
       const newUser: UserModel = {
-        id: user.uid,
+        id: firebaseUser.uid,
         name: name,
         email: email,
         admin: false
       };
 
-      await setDoc(doc(this._firestore, `users/${user.uid}`), newUser);
+      await setDoc(doc(this._firestore, `users/${firebaseUser.uid}`), newUser);
 
       this.user.set(newUser);
-      
-      this._snackBar.open('Usuario registrado con éxito, ve a iniciar sesión para acceder con tu cuenta.', 'Cerrar', {
+
+      this._snackBar.open('Usuario registrado con éxito. Ahora puedes iniciar sesión con tu cuenta.', 'Cerrar', {
         duration: 3000,
         panelClass: ['snackbar-success']
       });
@@ -112,48 +121,44 @@ export class AuthService {
   }
 
   // * Método para iniciar sesión
-  async login(email: string, password: string): Promise<UserModel | null> {
+  async login(email: string, password: string): Promise<void> {
     try {
       const userCredential = await signInWithEmailAndPassword(this._auth, email, password);
-      const user = userCredential.user;
+      const firebaseUser = userCredential.user;
 
-      const userDoc = doc(this._firestore, `users/${user.uid}`);
-      const userSnapshot = await getDoc(userDoc);
-      const userData = userSnapshot.data() as UserModel;
-
+      const userData = await this.getUserDataFromFirestore(firebaseUser);
       this.user.set(userData);
 
-      this._snackBar.open(`Bienvenido ${this.user()!.name}`, 'Cerrar', {
+      this._snackBar.open(`Bienvenido ${userData.name}`, 'Cerrar', {
         duration: 3000,
         panelClass: ['snackbar-success']
       });
       console.log(`Usuario autenticado con éxito: ${email}`);
       this._router.navigate(['/home']);
-      return userData;
     } catch (error) {
       this._snackBar.open('Error al iniciar sesión', 'Cerrar', {
         duration: 3000,
         panelClass: ['snackbar-error']
       });
       console.error('Error al iniciar sesión', error);
-      return null;
     }
   }
 
   // * Método para cerrar sesión
   async logout(): Promise<void> {
     try {
-      this._snackBar.open(`Adiós ${this.user()!.name}`, 'Cerrar', {
+      const userName = this.user()?.name || 'Usuario';
+      await signOut(this._auth);
+      this.user.set(null);
+
+      this._snackBar.open(`Adiós ${userName}`, 'Cerrar', {
         duration: 3000,
         panelClass: ['snackbar-success']
       });
-      await signOut(this._auth);
-      this.user.set(null);
-      
       console.log('Sesión cerrada con éxito');
       this._router.navigate(['/auth']);
     } catch (error) {
-      this._snackBar.open('Error al iniciar sesión', 'Cerrar', {
+      this._snackBar.open('Error al cerrar sesión', 'Cerrar', {
         duration: 3000,
         panelClass: ['snackbar-error']
       });
