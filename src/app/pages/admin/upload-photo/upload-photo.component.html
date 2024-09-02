@@ -1,0 +1,11 @@
+<form (ngSubmit)="onSubmit()" [formGroup]="photoForm">
+    <label for="photo">Subir Foto:</label>
+    <input type="file" formControlName="photo" id="photo" (change)="onFileSelected($event)" />
+
+    <label for="category">Categoría:</label>
+    <select formControlName="category" id="category">
+        <option *ngFor="let category of categories" [value]="category">{{ category }}</option>
+    </select>
+
+    <button type="submit" [disabled]="photoForm.invalid">Publicar</button>
+</form>

@@ -6,15 +6,15 @@
             <nav class="items__nav">
                 <ul class="ul">
                     <li class="items__li">
-                        <a routerLink="/inicio" class="items items--1">Inicio</a>
+                        <a [routerLink]="['/home']" routerLinkActive="router-link-active"class="items items--1">Inicio</a>
                     </li>
 
                     <li class="items__li">
-                        <a routerLink="/turnos" (click)="scrollToBottomTurnos()" class="items items--2">Turnos</a>
+                        <a [routerLink]="['/turnos']" routerLinkActive="router-link-active" (click)="scrollToBottomTurnos()" class="items items--2">Turnos</a>
                     </li>
 
                     <li class="items__li">
-                        <a routerLink="/ayuda" (click)="scrollToBottomAyuda()" class="items items--2">Ayuda</a>
+                        <a [routerLink]="['/ayuda']" routerLinkActive="router-link-active" (click)="scrollToBottomAyuda()" class="items items--2">Ayuda</a>
                     </li>
 
                     <li class="items__li">
@@ -25,14 +25,18 @@
                     @if(!isAuthenticated()){
                         <li class="items__li">
                             <a  [routerLink]="['/auth']" routerLinkActive="router-link-active" 
-                                class="items items--3">Iniciar sesión</a>
+                                class="items">Iniciar sesión</a>
                         </li>
                     } @else if(isAuthenticated()){
                         <li class="items__li" (click)="logout()">
-                            <a class="items items--3">Cerrar sesión</a>
+                            <a class="items">Cerrar sesión</a>
                         </li>
                     }
                     
+                    <li class="items__li">
+                        <a [routerLink]="['/publish']" routerLinkActive="router-link-active"
+                            class="items">Subir foto</a>
+                    </li>
                 </ul>
             </nav>
         </div>
@@ -51,19 +55,23 @@
                         <li class="nav-item">
                             <a class="nav-link active" aria-current="page" routerLink="/inicio">Inicio</a>
                         </li>
+
                         <li class="nav-item">
                             <a class="nav-link active" aria-current="page" (click)="scrollToBottomTurnos()"
                                 routerLink="/turnos">Turnos</a>
                         </li>
+
                         <li class="nav-item">
                             <a routerLink="/ayuda" (click)="scrollToBottomAyuda()" class="nav-link active"
                                 aria-current="page">Ayuda</a>
                         </li>
+
                         <li class="nav-item">
                             <a class="nav-link active" aria-current="page"
                                 href="https://wa.me/543462334472?text=Hola,%20tenes%20turnos%20disponibles?"
                                 target="_blank">Contactame</a>
                         </li>
+
                         @if(!isAuthenticated()){
                             <li class="nav-item">
                                 <a [routerLink]="['/auth']" routerLinkActive="router-link-active" class="nav-link active">Iniciar sesión</a>
@@ -73,6 +81,11 @@
                                 <a class="nav-link active">Cerrar sesión</a>
                             </li>
                         }
+
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page"
+                                [routerLink]="['/publish']" routerLinkActive="router-link-active">Contactame</a>
+                        </li>
                     </ul>
                 </div>
             </div>

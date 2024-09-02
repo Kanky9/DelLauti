@@ -17,6 +17,11 @@ export const routes: Routes = [
   },
 
   {
+    path: 'publish',
+    loadComponent: () => import('./pages/admin/upload-photo/upload-photo.component').then( m => m.UploadPhotoComponent)
+  },
+
+  {
     path: '**',
     redirectTo: 'home',
     pathMatch: 'full',
