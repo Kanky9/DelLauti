@@ -7,7 +7,7 @@
 <section class="cont" [ngClass]="{'activeBlur' : clickBlur, 'inactiveBlur' : !clickBlur}">
 
     <div class="cont-title">
-        <h1 class="title">Degradé en punta</h1>
+        <h1 class="title">{{ currentCategory }}</h1>
         <span class="linea"></span>
     </div>
 
@@ -19,8 +19,8 @@
     </div>
 
 </section>
-<!-- @if(showCarousel){ -->
-    <section class="cont__carousel" *ngIf="showCarousel">
+@if(showCarousel){
+    <section class="cont__carousel">
         <article class="light-box" [ngClass]="{'active': isClicked, 'inactive': !isClicked}">
             <a class="next next-left" (click)="goToPreviousImage()">
                 <i class="bi bi-arrow-left-short"></i>
@@ -37,4 +37,4 @@
             </a>
         </article>
     </section>
-<!-- } -->
+}

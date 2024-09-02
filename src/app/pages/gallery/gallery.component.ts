@@ -17,6 +17,7 @@ export class GalleryComponent implements OnInit {
 
   photos: any[] = [];
   filteredPhotos: any[] = [];
+  currentCategory: string = '';
 
   private _firestore = inject(Firestore);
   private _route = inject(ActivatedRoute);
@@ -35,6 +36,7 @@ export class GalleryComponent implements OnInit {
   }
 
   async getPhotosByCategory(category: string) {
+    this.currentCategory = category; 
     const photosCollection = collection(this._firestore, 'photos');
     const q = query(photosCollection, where('category', '==', category));
     const querySnapshot = await getDocs(q);

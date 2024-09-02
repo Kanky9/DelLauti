@@ -56,7 +56,6 @@ export class AuthService {
     }
 }
 
-
   // * Método para iniciar sesión con Google
   async loginWithGoogle(): Promise<void> {
     try {
@@ -107,7 +106,8 @@ export class AuthService {
 
       this._snackBar.open('Usuario registrado con éxito. Ahora puedes iniciar sesión con tu cuenta.', 'Cerrar', {
         duration: 3000,
-        panelClass: ['snackbar-success']
+        panelClass: ['snackbar-success'],
+        
       });
       console.log(`Usuario creado y guardado en Firestore: ${email}`);
       this._router.navigate(['/auth']);

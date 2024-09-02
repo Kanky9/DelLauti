@@ -3,6 +3,7 @@ import { Component, ElementRef, inject, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { UploadPhotoService } from '../../../services/upload-photo.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-upload-photo',
@@ -26,6 +27,7 @@ export class UploadPhotoComponent {
 
   private _fb = inject(FormBuilder);
   private _uploadPhotoService = inject(UploadPhotoService);
+   private _snackBar = inject(MatSnackBar);
 
   constructor() {
     this.photoForm = this._fb.group({
@@ -37,7 +39,6 @@ export class UploadPhotoComponent {
   triggerFileInputClick() {
     this.fileInput.nativeElement.click();
   }
-
 
   onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
@@ -55,10 +56,20 @@ export class UploadPhotoComponent {
     if (this.photoForm.valid && this.selectedFile) {
       try {
         await this._uploadPhotoService.uploadPhoto(this.selectedFile, this.photoForm.value.category);
-        // Aquí puedes mostrar un mensaje de éxito o redirigir al usuario
-        console.log('Upload successful');
+        this._snackBar.open('La imagen se subió correctamente', 'Cerrar', {
+          duration: 3000,
+        });
+        this.photoForm.reset();
+        this.selectedFile = null;
+        this.selectedFileUrl = null;
       } catch (error) {
         console.error('Upload failed', error);
+        this._snackBar.open('Hubo un error al subir la imagen', 'Cerrar', {
+          duration: 3000,
+        });
+        this.photoForm.reset();
+        this.selectedFile = null;
+        this.selectedFileUrl = null;
       }
     }
   }
