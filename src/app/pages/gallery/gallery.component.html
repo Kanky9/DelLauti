@@ -1,0 +1,40 @@
+<div class="back-link">
+    <a [routerLink]="['/home']" routerLinkActive="router-link-active">
+        <i class="fa fa-arrow-left"></i>
+    </a>
+</div>
+
+<section class="cont" [ngClass]="{'activeBlur' : clickBlur, 'inactiveBlur' : !clickBlur}">
+
+    <div class="cont-title">
+        <h1 class="title">Degradé en punta</h1>
+        <span class="linea"></span>
+    </div>
+
+    <div class="gallery">
+        <a class="cont__img" (click)="handleClick()" (click)="blurClick()" *ngFor="let photo of filteredPhotos, let i = index"
+            (click)="setSelectedIndex(i)">
+            <img class="img" [src]="photo.url" [alt]="photo.category">
+        </a>
+    </div>
+
+</section>
+<!-- @if(showCarousel){ -->
+    <section class="cont__carousel" *ngIf="showCarousel">
+        <article class="light-box" [ngClass]="{'active': isClicked, 'inactive': !isClicked}">
+            <a class="next next-left" (click)="goToPreviousImage()">
+                <i class="bi bi-arrow-left-short"></i>
+            </a>
+            <div class="cont_img--ligthBox">
+                <img class="img__ligth-box" [src]="getCurrentImage().url" [alt]="getCurrentImage().category">
+            </div>
+    
+            <a class="next next-right" (click)="goToNextImage()">
+                <i class="bi bi-arrow-right-short"></i>
+            </a>
+            <a class="close" (click)="handleClick(); blurClick(); showCarousel = false">
+                <i class="bi bi-x"></i>
+            </a>
+        </article>
+    </section>
+<!-- } -->

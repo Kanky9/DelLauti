@@ -22,6 +22,16 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/admin/upload-photo/upload-photo.component').then(m => m.UploadPhotoComponent),
     canActivate: [AdminGuard]
   },
+  
+  {
+    path: 'gallery',
+    children: [
+      {
+        path: ':category',
+        loadComponent: () => import('./pages/gallery/gallery.component').then(m => m.GalleryComponent)
+      }
+    ]
+  },
 
   {
     path: '**',
