@@ -24,7 +24,7 @@
 
                     @if(isAdmin()){
                         <li class="items__li">
-                            <a [routerLink]="['/publish']" routerLinkActive="router-link-active" class="items">Subir foto</a>
+                            <a [routerLink]="['/publish']" routerLinkActive="router-link-active" class="items">Publicar</a>
                         </li>
                     }
 
@@ -75,7 +75,7 @@
                         @if(isAdmin()){    
                             <li class="nav-item">
                                 <a class="nav-link active" aria-current="page" [routerLink]="['/publish']"
-                                    routerLinkActive="router-link-active">Subir foto</a>
+                                    routerLinkActive="router-link-active">Publicar</a>
                             </li>
                         }
                         @if(!isAuthenticated()){
