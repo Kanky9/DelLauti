@@ -1,4 +1,9 @@
-<section class="background">
+
+@if(_utilSvc.isLoading()){
+    <app-loading class="loading show" />
+}
+
+<section class="background" [class.blur]="_utilSvc.isLoading()">         
     <div class="back-link">
         <a [routerLink]="['/home']" routerLinkActive="router-link-active">
             <i class="fa fa-arrow-left"></i>
@@ -7,8 +12,8 @@
     <div class="cont" id="cont">
 
         <div class="header">
-            @if(selectedFileUrl){
-                <img [src]="selectedFileUrl" alt="Selected Image" />
+            @if(selectedFileUrl()){
+                <img [src]="selectedFileUrl()" alt="Selected Image" />
             } @else {
                 <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <g id="SVGRepo_bgCarrier" stroke-width="0"></g>

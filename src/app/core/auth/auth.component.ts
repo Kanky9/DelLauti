@@ -4,6 +4,8 @@ import { RouterLink } from '@angular/router';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { UtilsService } from '../../services/utils.service';
+import { LoadingComponent } from '../../shared/utils/loading/loading.component';
 
 @Component({
   selector: 'app-auth',
@@ -13,7 +15,8 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
     RouterLink,
     FormsModule,
     ReactiveFormsModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    LoadingComponent
   ],
   templateUrl: './auth.component.html',
   styleUrl: './auth.component.scss'
@@ -26,6 +29,7 @@ export class AuthComponent implements OnInit {
   private _authService = inject(AuthService);
   private _fb = inject(FormBuilder);
   private _snackBar = inject(MatSnackBar);
+  readonly _utilSvc = inject(UtilsService);
 
   constructor() {
     this.registerForm = this._fb.group({
@@ -91,6 +95,7 @@ export class AuthComponent implements OnInit {
   // * Método para manejar el registro
   async onRegister(): Promise<void> {
     if (this.registerForm.valid) {
+      this._utilSvc.show();
       try {
         const { name, email, password } = this.registerForm.value;
         console.log(`Intentando registrar usuario con email: ${email}`);
@@ -105,6 +110,8 @@ export class AuthComponent implements OnInit {
           duration: 3000,
         });
         this.registerForm.reset();
+      } finally {
+        this._utilSvc.hide();
       }
     }
   }
@@ -112,6 +119,7 @@ export class AuthComponent implements OnInit {
   // * Método para manejar el inicio de sesión
   async onLogin(): Promise<void> {
     if (this.loginForm.valid) {
+      this._utilSvc.show();
       try {
         const { email, password } = this.loginForm.value;
         console.log(`Intentando iniciar sesión con email: ${email}`);
@@ -126,6 +134,8 @@ export class AuthComponent implements OnInit {
           duration: 3000,
         });
         this.loginForm.reset();
+      } finally {
+        this._utilSvc.hide();
       }
     }
   }

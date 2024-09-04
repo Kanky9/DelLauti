@@ -4,6 +4,8 @@ import { Auth, fetchSignInMethodsForEmail, sendPasswordResetEmail } from '@angul
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router, RouterLink } from '@angular/router';
+import { LoadingComponent } from '../../../shared/utils/loading/loading.component';
+import { UtilsService } from '../../../services/utils.service';
 
 @Component({
   selector: 'app-forgot-password',
@@ -13,6 +15,7 @@ import { Router, RouterLink } from '@angular/router';
     FormsModule,
     ReactiveFormsModule,
     RouterLink,
+    LoadingComponent,
   ],
   templateUrl: './forgot-password.component.html',
   styleUrl: './forgot-password.component.scss'
@@ -25,6 +28,7 @@ export class ForgotPasswordComponent {
   private _router = inject(Router);
   private _fb = inject(FormBuilder);
   private _snackBar = inject(MatSnackBar);
+  readonly _utilSvc = inject(UtilsService);
 
   constructor() {
     this.forgotPasswordForm = this._fb.group({
@@ -34,7 +38,9 @@ export class ForgotPasswordComponent {
 
   onSubmit() {
     const email = this.forgotPasswordForm.value.email;
-    sendPasswordResetEmail(this._auth, email)
+    this._utilSvc.show();
+    try {
+      sendPasswordResetEmail(this._auth, email)
       .then(() => {
         this._snackBar.open('Se ha enviado un enlace para restablecer la contraseña a su correo electrónico.', 'Cerrar', {
           duration: 3000,
@@ -47,12 +53,14 @@ export class ForgotPasswordComponent {
         // Redirigir al componente auth
         this._router.navigate(['/auth']);
       })
-      .catch((error) => {
+    } catch (error) {
         this._snackBar.open('Ups, hubo un error al enviar el enlace. Por favor, inténtelo de nuevo.', 'Cerrar', {
           duration: 3000,
           panelClass: 'snackbar-error'
         });
         console.error(error);
-      });
+    } finally { 
+      this._utilSvc.hide();
+    }  
   }
 }

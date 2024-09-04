@@ -1,4 +1,8 @@
-<section class="background">
+@if(_utilSvc.isLoading()){
+    <app-loading class="loading show" />
+}
+
+<section class="background" [class.blur]="_utilSvc.isLoading()">
     <div class="back-link">
         <a [routerLink]="['/home']" routerLinkActive="router-link-active">
             <i class="fa fa-arrow-left"></i>

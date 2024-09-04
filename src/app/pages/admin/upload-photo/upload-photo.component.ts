@@ -1,9 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, inject, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, signal, Signal, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { UploadPhotoService } from '../../../services/upload-photo.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { UtilsService } from '../../../services/utils.service';
+import { LoadingComponent } from '../../../shared/utils/loading/loading.component';
 
 @Component({
   selector: 'app-upload-photo',
@@ -12,7 +14,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
     CommonModule,
     RouterLink,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    LoadingComponent
   ],
   templateUrl: './upload-photo.component.html',
   styleUrl: './upload-photo.component.scss'
@@ -21,13 +24,14 @@ export class UploadPhotoComponent {
   @ViewChild('fileInput') fileInput!: ElementRef;
 
   photoForm: FormGroup;
-  selectedFile: File | null = null;
-  selectedFileUrl: string | null = null;
+  selectedFile: Signal<File | null> = signal(null);
+  selectedFileUrl: Signal<string | null> = signal(null);
   categories = ['Diseño', 'Clásico', 'Cresta', 'Degradé', 'Degradé en punta'];
 
   private _fb = inject(FormBuilder);
   private _uploadPhotoService = inject(UploadPhotoService);
-   private _snackBar = inject(MatSnackBar);
+  private _snackBar = inject(MatSnackBar);
+  readonly _utilSvc = inject(UtilsService);
 
   constructor() {
     this.photoForm = this._fb.group({
@@ -43,33 +47,40 @@ export class UploadPhotoComponent {
   onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
-      this.selectedFile = input.files[0];
+      const file = input.files[0];
+      this.selectedFile = signal(file);
       const reader = new FileReader();
       reader.onload = () => {
-        this.selectedFileUrl = reader.result as string;
+        this.selectedFileUrl = signal(reader.result as string);
       };
-      reader.readAsDataURL(this.selectedFile);
+      reader.readAsDataURL(file);
     }
   }
 
   async onSubmit() {
-    if (this.photoForm.valid && this.selectedFile) {
+    if (this.photoForm.valid && this.selectedFile()) {
+      this._utilSvc.show(); // Mostrar el loading
       try {
-        await this._uploadPhotoService.uploadPhoto(this.selectedFile, this.photoForm.value.category);
-        this._snackBar.open('La imagen se subió correctamente', 'Cerrar', {
-          duration: 3000,
-        });
-        this.photoForm.reset();
-        this.selectedFile = null;
-        this.selectedFileUrl = null;
+        const file = this.selectedFile();
+        if (file) {
+          await this._uploadPhotoService.uploadPhoto(file, this.photoForm.value.category);
+          this._snackBar.open('La imagen se subió correctamente', 'Cerrar', {
+            duration: 3000,
+          });
+          this.photoForm.reset();
+          this.selectedFile = signal(null);
+          this.selectedFileUrl = signal(null);
+        }
       } catch (error) {
-        console.error('Upload failed', error);
+        console.error('Error al subir la imagen', error);
         this._snackBar.open('Hubo un error al subir la imagen', 'Cerrar', {
           duration: 3000,
         });
         this.photoForm.reset();
-        this.selectedFile = null;
-        this.selectedFileUrl = null;
+        this.selectedFile = signal(null);
+        this.selectedFileUrl = signal(null);
+      } finally {
+        this._utilSvc.hide(); // Ocultar el loading
       }
     }
   }
