@@ -1,4 +1,8 @@
-<section class="cont">
+@if(_utilSvc.isLoading()){
+    <app-loading class="loading show" />
+}
+
+<section class="cont" [class.blur]="_utilSvc.isLoading()">
 
     <div class="flex">
 

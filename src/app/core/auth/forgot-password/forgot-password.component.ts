@@ -36,29 +36,27 @@ export class ForgotPasswordComponent {
     });
   }
 
-  onSubmit() {
+  async onSubmit() {
     const email = this.forgotPasswordForm.value.email;
     this._utilSvc.show();
     try {
-      sendPasswordResetEmail(this._auth, email)
-      .then(() => {
-        this._snackBar.open('Se ha enviado un enlace para restablecer la contraseña a su correo electrónico.', 'Cerrar', {
-          duration: 3000,
-          panelClass: 'snackbar-success'
-        });
-        
-        // Limpiar el formulario
-        this.forgotPasswordForm.reset();
+      await sendPasswordResetEmail(this._auth, email);
+      this._snackBar.open('Se ha enviado un enlace para restablecer la contraseña a su correo electrónico.', 'Cerrar', {
+        duration: 3000,
+        panelClass: 'snackbar-success'
+      });
+      
+      // Limpiar el formulario
+      this.forgotPasswordForm.reset();
 
-        // Redirigir al componente auth
-        this._router.navigate(['/auth']);
-      })
+      // Redirigir al componente auth
+      this._router.navigate(['/auth']);
     } catch (error) {
-        this._snackBar.open('Ups, hubo un error al enviar el enlace. Por favor, inténtelo de nuevo.', 'Cerrar', {
-          duration: 3000,
-          panelClass: 'snackbar-error'
-        });
-        console.error(error);
+      this._snackBar.open('Ups, hubo un error al enviar el enlace. Por favor, inténtelo de nuevo.', 'Cerrar', {
+        duration: 3000,
+        panelClass: 'snackbar-error'
+      });
+      console.error(error);
     } finally { 
       this._utilSvc.hide();
     }  

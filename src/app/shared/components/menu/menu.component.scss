@@ -17,6 +17,7 @@
     background-attachment: fixed;
     background-position: center;
     overflow: hidden;
+    transition: filter 0.5s ease;
 }
 
 .cont::after {
@@ -97,7 +98,26 @@
     background-color: #F4D508;
 }
 
+.loading{
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  z-index: 100000;
+  transition: opacity 0.5s ease; 
+  opacity: 0;
+}
 
+.loading.show {
+  opacity: 1; // Mostrar cuando se añade la clase 'show'
+}
+
+.cont.blur {
+  filter: blur(2px);
+}
 
 @media screen and (max-width: 745px){
 
