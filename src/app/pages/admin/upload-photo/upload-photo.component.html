@@ -40,7 +40,9 @@
 
             <label class="label" for="category">Categoría:</label>
             <select class="input" formControlName="category" id="category">
-                <option *ngFor="let category of categories" [value]="category">{{ category }}</option>
+                @for(category of categories; track category){
+                    <option [value]="category">{{ category }}</option>
+                }
             </select>
 
             <button class="button" type="submit" [disabled]="photoForm.invalid">Publicar</button>
