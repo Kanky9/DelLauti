@@ -12,12 +12,12 @@
     </div>
 
     <div class="gallery">
-        @for( photo of filteredPhotos; track photo; let i = $index){
+        <!-- @for( photo of filteredPhotos; track photo; let i = $index){ -->
             <a class="cont__img" (click)="handleClick()" (click)="blurClick()" *ngFor="let photo of filteredPhotos, let i = index"
             (click)="setSelectedIndex(i)">
                 <img class="img" [src]="photo.url" [alt]="photo.category">
             </a>
-        }
+        <!-- } -->
         
     </div>
 
