@@ -30,6 +30,7 @@ export class UtilsService {
   ): MatDialogRef<MessageModalComponent, boolean> {
     return this._dialog.open(MessageModalComponent, {
       data: { title, message, cancel, accept },
+      panelClass: 'custom-dialog-container'
     });
   }
 }

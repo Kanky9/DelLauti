@@ -1,7 +1,7 @@
 <div class="cont">
     <h1 mat-dialog-title>{{data.title}}</h1>
     <div class="cont-message" mat-dialog-content>
-        <p>{{ data.message }}</p>
+        <p [innerHTML]="data.message">{{ data.message }}</p>
     </div>
     <div class="cont-button" mat-dialog-actions>
         <button mat-button (click)="onClose(false)" class="close-button">{{data.cancel}}</button>
