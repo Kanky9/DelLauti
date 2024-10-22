@@ -107,7 +107,6 @@ export class UserShiftHistoryComponent implements OnInit {
 
   // * Función para manejar la cancelación de turnos
   async onCancelShift(shift: Shift) {
-    // Abre el primer modal para confirmar la cancelación
     const dialogRef = this._utilsService.showMessageDialog(
       "Confirmación de Cancelación",
       "¿Estás seguro de cancelar tu turno?",
@@ -117,7 +116,6 @@ export class UserShiftHistoryComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(async (confirmed) => {
       if (confirmed) {
-        // Si el usuario confirma, abre el segundo modal
         const secondDialogRef = this._utilsService.showMessageDialog(
           "Instrucción",
           'Para cancelar tu turno, envíale un mensaje al peluquero (Si precionas "cerrar", tu turno no será cancelado).',
@@ -127,7 +125,6 @@ export class UserShiftHistoryComponent implements OnInit {
 
         secondDialogRef.afterClosed().subscribe(async (finalConfirm) => {
           if (finalConfirm) {
-            // Verificar si el turno no ha pasado y actualizar la disponibilidad
             const now = new Date();
             const shiftTime = new Date(shift.day);
             const [hours, minutes] = shift.scheduleStart.split(':').map(Number);
@@ -135,9 +132,10 @@ export class UserShiftHistoryComponent implements OnInit {
 
             if (shiftTime > now) {
               await this._shiftService.cancelShift(shift.id!);
+              // Recargar turnos después de la cancelación
+              this.loadUserShifts();
             }
 
-            // Redirigir a WhatsApp con el mensaje de cancelación
             this.redirectToWhatsApp(shift);
           }
         });
