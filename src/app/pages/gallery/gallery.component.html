@@ -1,4 +1,4 @@
-<div class="back-link">
+<!-- <div class="back-link">
     <a [routerLink]="['/home']" routerLinkActive="router-link-active">
         <i class="fa fa-arrow-left"></i>
     </a>
@@ -12,12 +12,12 @@
     </div>
 
     <div class="gallery">
-        <!-- @for( photo of filteredPhotos; track photo; let i = $index){ -->
+        
             <a class="cont__img" (click)="handleClick()" (click)="blurClick()" *ngFor="let photo of filteredPhotos, let i = index"
             (click)="setSelectedIndex(i)">
                 <img class="img" [src]="photo.url" [alt]="photo.category">
             </a>
-        <!-- } -->
+        
         
     </div>
 
@@ -40,4 +40,4 @@
             </a>
         </article>
     </section>
-}
+} -->

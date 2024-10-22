@@ -1,0 +1,72 @@
+@if(_utilSvc.isLoading()){
+    <app-loading class="loading show" />
+}
+
+<section class="background" [class.blur]="_utilSvc.isLoading()">
+    <div class="back-link">
+        <a [routerLink]="['/home']" routerLinkActive="router-link-active">
+            <i class="fa fa-arrow-left"></i>
+        </a>
+    </div>
+
+    <div class="cont">
+        <form [formGroup]="shiftForm" (ngSubmit)="saveShifts()">
+
+            <div>
+                <h2>
+                    Selecciona los días
+                </h2>
+            </div>
+
+            <!-- Selector de días con Angular Material -->
+            <mat-card class="demo-inline-calendar-card">
+                <mat-calendar [(selected)]="newDay" (selectedChange)="addDay(newDay)"></mat-calendar>
+            </mat-card>
+            <!-- <p>Fecha seleccionada: {{ newDay | date: 'fullDate':'':'es-ES' }}</p> -->
+
+            <!-- Mostrar la lista de días seleccionados -->
+            @if(daysSelected().length > 0){
+                <h3>Días Seleccionados</h3>
+                <ul>
+                    @for( day of daysSelected(); track day; let i = $index){
+                    <li>
+                        {{ day | date: 'mediumDate':'':'es-ES' }}
+                        <button type="button" (click)="deleteDay(i)">Eliminar</button>
+                    </li>
+                    }
+                </ul>
+            }
+
+            <div class="cont-schedule">
+                <nav>
+                    <label for="scheduleStart">Hora de inicio:</label>
+                    <input type="time" formControlName="scheduleStart">
+                </nav>
+             
+                <nav>
+                    <label for="scheduleEnd">Hora de fin:</label>
+                    <input type="time" formControlName="scheduleEnd">
+                </nav>
+            </div>
+
+            <button class="button-schedule" type="button" (click)="addSchedules()">Agregar horario</button>
+
+            <!-- Mostrar la lista de horarios agregados -->
+            @if(schedules.length > 0){
+                <h3>Horarios Seleccionados</h3>
+                <ul>
+                    @for(schedule of schedules; track schedule; let i = $index){  
+                        <li>
+                            {{ schedule.inicio }} - {{ schedule.fin }}
+                            <button type="button" (click)="deleteSchedules(i)">Eliminar</button>
+                        </li>
+                    } 
+                </ul>
+            }
+
+            <nav class="cont-button">
+               <button class="button" type="submit">Guardar turnos</button> 
+            </nav>
+        </form>
+    </div>
+</section>

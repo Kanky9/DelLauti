@@ -1,0 +1,39 @@
+<section class="background">
+    <div class="back-link">
+        <a [routerLink]="['/home']" routerLinkActive="router-link-active">
+            <i class="fa fa-arrow-left"></i>
+        </a>
+    </div>
+    
+    <div class="cont">
+        <h2>Reservar Turno</h2>
+        <h5>Selecciona un día para ver los horarios disponibles</h5>
+
+        <!-- Selector de días para ver turnos disponibles -->
+        <mat-card class="demo-inline-calendar-card">
+            <mat-calendar [(selected)]="selectedDay" (selectedChange)="searchShiftsAvailable($event)"></mat-calendar>
+        </mat-card>
+
+        <!-- Mostrar la lista de turnos disponibles -->
+        @if(shiftsAvailable().length > 0){
+            <h3>Selecciona un horario</h3>
+            <ul>    
+                @for(shift of shiftsAvailable(); track shift){
+                    
+                    <li (click)="confirmBooking(shift)">
+                        <div class="button-text">
+                            <span>{{ shift.scheduleStart }}</span>
+                        </div>
+                    </li>
+                }
+            </ul>
+        }
+
+        <div class="no-shift">
+            @if(shiftsAvailable().length === 0){
+                <p>No hay turnos disponibles para este día</p>
+            }
+        </div>
+    </div>
+
+</section>

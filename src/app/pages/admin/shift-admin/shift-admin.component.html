@@ -1,0 +1,49 @@
+<section class="background">
+    <div class="back-link">
+        <a [routerLink]="['/home']" routerLinkActive="router-link-active">
+            <i class="fa fa-arrow-left"></i>
+        </a>
+    </div>
+
+    <div class="turnero-admin">
+        <h2>Turnos Reservados</h2>
+
+        <!-- Mostrar la lista de turnos reservados -->
+        @if(shiftsReserved().length > 0){
+        <ul>
+            @for(shift of shiftsReserved(); track shift){
+            <li>
+                <mat-card class="shift-card">
+                    <h3>Día: {{ shift.day | date: 'fullDate' }}</h3>
+                    <p>Horario: {{ shift.scheduleStart }} - {{ shift.scheduleEnd }}</p>
+                    <p>Cliente: {{ shift.userName }}</p>
+                    <p>Email: {{ shift.userEmail }}</p>
+                </mat-card>
+            </li>
+            }
+        </ul>
+        } @else {
+            <p class="no-shift">No hay turnos reservados por el momento.</p>
+        }
+
+        <h2>Turnos Finalizados</h2>
+
+        <!-- Mostrar la lista de turnos finalizados -->
+        @if(shiftsFinalized().length > 0){
+        <ul>
+            @for(shift of shiftsFinalized(); track shift){
+            <li>
+                <mat-card class="shift-card">
+                    <h3>Día: {{ shift.day | date: 'fullDate' }}</h3>
+                    <p>Horario: {{ shift.scheduleStart }} - {{ shift.scheduleEnd }}</p>
+                    <p>Cliente: {{ shift.userName }}</p>
+                    <p>Email: {{ shift.userEmail }}</p>
+                </mat-card>
+            </li>
+            }
+        </ul>
+        } @else {
+            <p class="no-shift">No hay turnos finalizados por el momento.</p>
+        }
+    </div>
+</section>

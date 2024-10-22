@@ -54,7 +54,25 @@ export class AuthService {
         console.log('New user created:', userModel); 
         return userModel;
     }
-}
+  }
+  
+  // * Método para obtener la información del cliente a partir de su ID
+  async getUserInfo(userId: string): Promise<UserModel | null> {
+    try {
+      const userDocRef = doc(this._firestore, `users/${userId}`);
+      const userSnapshot = await getDoc(userDocRef);
+
+      if (userSnapshot.exists()) {
+        return userSnapshot.data() as UserModel; // Retorna la información del usuario en formato de UserModel
+      } else {
+        console.log('No such user document!');
+        return null;
+      }
+    } catch (error) {
+      console.error('Error obteniendo la información del usuario:', error);
+      return null;
+    }
+  }
 
   // * Método para iniciar sesión con Google
   async loginWithGoogle(): Promise<void> {

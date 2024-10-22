@@ -1,0 +1,104 @@
+.turnero-admin {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 35px;
+
+  h2 {
+    width: 100%;
+    border-bottom: 3px solid #f4d508;
+    font-weight: 600;
+    margin-bottom: 20px;
+  }
+
+  h2, h3 {
+    text-align: center;
+    font-style: italic;
+    color: #303030dc;
+  }
+
+  ul {
+    list-style-type: none;
+    padding: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  li {
+    width: 100%;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .shift-card {
+    width: 90%;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 15px;
+    background-color: #fff;
+    text-align: center;
+
+    h3 {
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+    }
+
+    p {
+      font-size: 1rem;
+      margin-bottom: 5px;
+    }
+  }
+
+  .no-shift {
+    font-style: italic;
+    margin-top: 20px;
+    font-size: 1.2rem;
+    color: #303030;
+  }
+}
+
+/* Estilos Responsive */
+@media (max-width: 768px) {
+  .turnero-admin {
+    padding: 15px;
+
+    h2 {
+      font-size: 1.8rem;
+    }
+
+    h3 {
+      font-size: 1.5rem;
+    }
+
+    .shift-card {
+      width: 100%;
+      font-size: 1rem;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .turnero-admin {
+    padding: 10px;
+
+    h2 {
+      font-size: 1.5rem;
+    }
+
+    .shift-card {
+      width: 100%;
+      font-size: 0.9rem;
+
+      h3 {
+        font-size: 1.2rem;
+      }
+
+      p {
+        font-size: 0.9rem;
+      }
+    }
+  }
+}

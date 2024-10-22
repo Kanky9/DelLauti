@@ -1,4 +1,6 @@
-import { Injectable, signal } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MessageModalComponent } from '../shared/utils/message-modal/message-modal.component';
 
 @Injectable({
   providedIn: 'root'
@@ -6,16 +8,28 @@ import { Injectable, signal } from '@angular/core';
 export class UtilsService {
 
   private _isLoading = signal(false);
+  private _dialog = inject(MatDialog);
 
   isLoading() {
     return this._isLoading();
   }
 
   show() {
-    this._isLoading = signal(true);
+    this._isLoading.set(true);  
   }
 
   hide() {
-    this._isLoading = signal(false);
+    this._isLoading.set(false); 
+  }
+
+  showMessageDialog(
+    title: string,
+    message: string,
+    cancel = 'Cancelar',
+    accept = 'Aceptar'
+  ): MatDialogRef<MessageModalComponent, boolean> {
+    return this._dialog.open(MessageModalComponent, {
+      data: { title, message, cancel, accept },
+    });
   }
 }

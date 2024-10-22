@@ -9,26 +9,43 @@
         <div class="items__menu--container">
             <nav class="items__nav">
                 <ul class="ul">
-                    <li class="items__li">
+                    <!-- <li class="items__li">
                         <a [routerLink]="['/home']" routerLinkActive="router-link-active" class="items items--1">Inicio</a>
-                    </li>
+                    </li> -->
 
-                    <li class="items__li">
-                        <a [routerLink]="['/turnos']" routerLinkActive="router-link-active" (click)="scrollToBottomTurnos()" class="items items--2">Turnos</a>
-                    </li>
+                    <!-- @if(isAuthenticated()){ -->
+                        <li class="items__li">
+                            <a [routerLink]="['/shifts']" routerLinkActive="router-link-active"  (click)="onShiftsClick()"
+                                class="items items--2">Reservar turnos</a>
+                        </li>
+                    <!-- } -->
 
                     <!-- <li class="items__li">
                         <a [routerLink]="['/ayuda']" routerLinkActive="router-link-active" (click)="scrollToBottomAyuda()" class="items items--2">Ayuda</a>
                     </li> -->
-
-                    <li class="items__li">
-                        <a href="https://wa.me/543462334472?text=Hola,%20tenes%20turnos%20disponibles?" target="_blank"
-                            class="items items--3">Contactame</a>
-                    </li>
+                    
+                    @if(isAdmin()){
+                        <li class="items__li">
+                            <a [routerLink]="['/new-shift']" routerLinkActive="router-link-active" class="items">Cargar turnos</a>
+                        </li>
+                    }
 
                     @if(isAdmin()){
                         <li class="items__li">
-                            <a [routerLink]="['/publish']" routerLinkActive="router-link-active" class="items">Publicar</a>
+                            <a [routerLink]="['/shift-admin']" routerLinkActive="router-link-active" class="items">Administrar turnos</a>
+                        </li>
+                    }
+
+                    <!-- @if(!isAdmin()){ -->
+                        <li class="items__li">
+                            <a [routerLink]="['/shift-history']" routerLinkActive="router-link-active" class="items">Historial de turnos</a>
+                        </li>
+                    <!-- } -->
+
+                    @if(!isAdmin()){ 
+                        <li class="items__li">
+                            <a href="https://wa.me/543462334472?text=Hola,%20tenes%20turnos%20disponibles?" target="_blank"
+                                class="items items--3">Contactame</a>
                         </li>
                     }
 
@@ -48,52 +65,58 @@
     </div>
 
     <div class="flex__responsive">
-        <nav class="navbar navbar-expand-lg " [ngClass]="{'active': isClicked}">
-            <div class="container-fluid">
-                <button (click)="onElementClick()" class="navbar-toggler mb-2" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
-                    aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav">
-                        <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" routerLink="/inicio">Inicio</a>
-                        </li>
+        <!-- Botón hamburguesa para abrir el menú -->
+        <button (click)="onElementClick()" class="hamburger-btn" [class.active]="isClicked">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    
+        <!-- Overlay para el fondo detrás del menú -->
+        @if(isClicked){
+            <div class="menu-overlay" (click)="onElementClick()"></div>
+        }
+    
+        <!-- Menú responsive que aparece al hacer clic en el botón -->
+        <nav class="responsive-menu" [ngClass]="{'active': isClicked}">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link active" (click)="onShiftsClick()" routerLink="/turnos">Reservar turnos</a>
+                </li>
+                 
+                @if(isAdmin()){
+                    <li class="nav-item">
+                        <a class="nav-link active" routerLink="/new-shift">Cargar turnos</a>
+                    </li>
+                }
+                
+                @if(isAdmin()){
+                   <li class="nav-item">
+                        <a class="nav-link active" routerLink="/shift-admin">Administrar turnos</a>
+                    </li>
+                }
+    
+                <li class="nav-item">
+                    <a class="nav-link active" routerLink="/shift-history">Historial de turnos</a>
+                </li>
+                @if(!isAdmin()){
+                    <li class="nav-item">
+                        <a class="nav-link active" href="https://wa.me/543462334472?text=Hola,%20tenes%20turnos%20disponibles?"
+                            target="_blank">Contactame</a>
+                    </li>
+                }
+                @if(!isAuthenticated()){
+                    <li class="nav-item">
+                        <a class="nav-link active" routerLink="/auth">Iniciar sesión</a>
+                    </li>
+                }
 
-                        <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" (click)="scrollToBottomTurnos()"
-                                routerLink="/turnos">Turnos</a>
-                        </li>
-
-                        <!-- <li class="nav-item">
-                            <a routerLink="/ayuda" (click)="scrollToBottomAyuda()" class="nav-link active"
-                                aria-current="page">Ayuda</a>
-                        </li> -->
-
-                        <li class="nav-item">
-                            <a class="nav-link active" aria-current="page"
-                                href="https://wa.me/543462334472?text=Hola,%20tenes%20turnos%20disponibles?"
-                                target="_blank">Contactame</a>
-                        </li>
-                        @if(isAdmin()){    
-                            <li class="nav-item">
-                                <a class="nav-link active" aria-current="page" [routerLink]="['/publish']"
-                                    routerLinkActive="router-link-active">Publicar</a>
-                            </li>
-                        }
-                        @if(!isAuthenticated()){
-                            <li class="nav-item">
-                                <a [routerLink]="['/auth']" routerLinkActive="router-link-active" class="nav-link active">Iniciar sesión</a>
-                            </li>
-                        } @else if(isAuthenticated()){
-                            <li class="nav-item" (click)="logout()">
-                                <a class="nav-link active">Cerrar sesión</a>
-                            </li>
-                        }
-                    </ul>
-                </div>
-            </div>
+                @if(isAuthenticated()){
+                    <li class="nav-item" (click)="logout()">
+                        <a class="nav-link active">Cerrar sesión</a>
+                    </li>
+                }    
+            </ul>
         </nav>
     </div>
 </section>

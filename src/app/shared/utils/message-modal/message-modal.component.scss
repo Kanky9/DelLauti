@@ -1,0 +1,68 @@
+.cont{
+  position: relative;
+  background-color: #fff;
+  z-index: 10000000000;
+}
+
+h1 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+  margin-top: 10px;
+  border-bottom: 3px solid #f4d508;
+  letter-spacing: 1px;
+  padding: 1rem 1rem 1rem 1rem;
+}
+
+.cont-message {
+  padding: 1.5rem 1.5rem 1rem 1.5rem;
+}
+
+.cont-message p {
+  font-size: 1.3rem;
+  color: #444;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+
+.cont-button {
+  display: flex;
+  justify-content: space-evenly;
+  margin-bottom: 1.5rem;
+}
+
+button {
+  font-size: 1rem;
+  font-weight: bold;
+  padding: .8rem 1.8rem;
+  border: none;
+  border-radius: 15px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 1px 5px #f4d508;
+
+  &.close-button {
+    background: transparent;
+    color: #f4d508;
+    border: 2px solid #f4d508;
+
+    &:hover {
+      box-shadow: 0 4px 10px #f4d508;
+      // box-shadow: 0 4px 10px #303030;
+      border: 2px solid transparent;
+    }
+  }
+
+  &.accept-button {
+    background: #f4d508;
+    color: #fff;
+
+    &:hover {
+      background: #f4d508;
+      box-shadow: 0 4px 10px #303030;
+    }
+  }
+}

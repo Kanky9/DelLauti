@@ -1,0 +1,166 @@
+// @import url('https://fonts.googleapis.com/css2?family=Protest+Strike&display=swap');
+
+.cont {
+  margin: 25px 0 25px 0;
+  background-color: #fff;
+  border-radius: 30px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.35);
+  padding: 20px;
+  width: 500px;
+  max-width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+h2{
+  text-align: center;
+  // font-family: "Protest Strike", system-ui;
+  font-weight: 600;
+  font-style: italic;
+  color: #303030dc;
+}
+
+.cont-schedule{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-top: 10px;
+
+  nav{
+    width: 110px;
+    text-align: center;
+
+    input{
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+    }
+  }
+}
+
+.demo-inline-calendar-card {
+  max-width: 400px;
+  margin: 0 auto;   
+  padding: 10px;    
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+}
+
+label {
+  font-weight: bold;
+  color: #05060f99;
+  margin-bottom: 5px;
+}
+
+input {
+  width: 100%;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  font-size: 1rem;
+  background-color: #f9f9f9;
+  transition: border-color 0.3s ease;
+}
+
+input:focus {
+  border-color: #f4d508;
+  outline: none;
+}
+
+.button-schedule{
+  background-color: #f4d508;
+  margin-top: 10px;
+  color: #303030;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 8px 15px 8px 15px;
+  border: none;
+  border-radius: 10px;
+  width: 100%;
+}
+
+// .button-schedule:hover {
+//   background-color: #e0c008;
+// }
+
+.cont-button{
+  width: 100%;
+  display: flex;
+  justify-content: end;
+  margin-top: 10px;
+}
+
+.button {
+  text-align: end;
+  background: transparent;
+  color: #303030;
+  font-size: 17px;
+  font-weight: 500;
+  padding: 8px 20px;
+  border: 2px solid #f4d508;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.button:hover {
+  background: #f4d508;
+}
+
+h3{
+  margin-top: 10px;
+  text-align: center;
+}
+
+ul {
+  display: flex;
+  width: 277px;
+  height: 140px;
+  background-color: white;
+  border: 2px solid #f4d508;
+  // border-radius: 15px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  overflow: auto;
+  scroll-snap-type: x mandatory;
+  margin-top: 10px;
+  padding: 10px;
+  gap: 10px;
+  scroll-padding: 10px;
+
+  li {
+    scroll-snap-align: start;
+    flex: 0 0 60%;
+    background: linear-gradient(120deg, #f4d508cf 30%, #fff6a3 88%, #f4d50895 
+    60%, #fff6a3 48%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #303030;
+    text-align: center;
+    font-size: 1.3rem;
+    line-height: 1.3em;
+    font-weight: 400;
+    font-family: sans-serif;
+    border-radius: 15px;
+
+    button {
+      margin-top: 5px;
+      background-color: #ff4d4d;
+      color: white;
+      font-size: 14px;
+      padding: 5px 10px;
+      border-radius: 15px;
+      border: none;
+    }
+
+    button:hover {
+      background-color: #ff1a1a;
+    }
+  }
+}
+
+@media (max-width: 500px) {
+  .cont {
+    margin-top: 75px;
+    max-width: 90%;
+  }
+}

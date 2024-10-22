@@ -1,6 +1,6 @@
 import { CommonModule, NgClass } from '@angular/common';
 import { Component, computed, inject, OnInit, Signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
 import { UtilsService } from '../../../services/utils.service';
 import { LoadingComponent } from '../../utils/loading/loading.component';
@@ -25,6 +25,7 @@ export class MenuComponent implements OnInit{
   
   readonly _utilSvc = inject(UtilsService);
   private _authService = inject(AuthService);
+  private router = inject(Router);
 
   constructor() {
     this.isAuthenticated = computed(() => !!this._authService.user$());
@@ -48,11 +49,27 @@ export class MenuComponent implements OnInit{
     this.isClicked = !this.isClicked;
   }
 
-  scrollToBottomTurnos() {
+  scrollToBottomAyuda() {
     window.scrollTo({ top: 700, behavior: 'smooth' });
   }
 
-  scrollToBottomAyuda() {
-    window.scrollTo({ top: 700, behavior: 'smooth' });
+  async onShiftsClick() {
+    if (this.isAuthenticated()) {
+      await this.router.navigate(['/shifts']);
+    } else {
+      const dialogRef = this._utilSvc.showMessageDialog(
+        'Necesitas iniciar sesión para pedir un turno.',
+        'Ve a iniciar sesión o presiona aceptar para continuar.',
+        'Cerrar',
+        'Aceptar'
+      );
+
+      // Suscribirse al evento afterClosed para redirigir si presiona "Aceptar"
+      dialogRef.afterClosed().subscribe(async (result) => {
+        if (result) {  // Si el resultado es verdadero (presionó "Aceptar")
+          await this.router.navigate(['/auth']); // Redirigir a la página de login
+        }
+      });
+    }
   }
 }

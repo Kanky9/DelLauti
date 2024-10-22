@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { AdminGuard } from './guards/admin.guard';
+import { AuthGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
   {
@@ -21,6 +22,30 @@ export const routes: Routes = [
     path: 'publish',
     loadComponent: () => import('./pages/admin/upload-photo/upload-photo.component').then(m => m.UploadPhotoComponent),
     canActivate: [AdminGuard]
+  },
+
+  {
+    path: 'new-shift',
+    loadComponent: () => import('./pages/admin/add-shift/add-shift.component').then(m => m.AddShiftComponent),
+    canActivate: [AdminGuard]
+  },
+
+  {
+    path: 'shifts',
+    loadComponent: () => import('./pages/available-shift/available-shift.component').then(m => m.AvailableShiftComponent),
+    canActivate: [AuthGuard]
+  },
+
+  {
+    path: 'shift-admin',
+    loadComponent: () => import('./pages/admin/shift-admin/shift-admin.component').then(m => m.ShiftAdminComponent),
+    canActivate: [AdminGuard]
+  },
+
+  {
+    path: 'shift-history',
+    loadComponent: () => import('./pages/user-shift-history/user-shift-history.component').then(m => m.UserShiftHistoryComponent),
+    canActivate: [AuthGuard]
   },
   
   {
