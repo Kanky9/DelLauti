@@ -192,4 +192,35 @@ export class ShiftService {
 
     return Array.from(dates);
   }
+
+  // * Método para verificar si existen turnos en conflicto
+  async checkIfShiftExists(days: Date[], schedules: { inicio: string; fin: string }[]): Promise<Shift[]> {
+    const shiftsCollection = collection(this._firestore, 'shifts');
+    const duplicateShifts: Shift[] = [];
+
+    for (const day of days) {
+      for (const schedule of schedules) {
+        const q = query(
+          shiftsCollection,
+          where('day', '==', day),
+          where('scheduleStart', '==', schedule.inicio),
+          where('scheduleEnd', '==', schedule.fin)
+        );
+
+        const snapshot = await getDocs(q);
+        snapshot.forEach(doc => {
+          const shiftData = doc.data() as Shift;
+          if (shiftData.day instanceof Timestamp) {
+            shiftData.day = shiftData.day.toDate();
+          }
+          duplicateShifts.push({
+            id: doc.id,
+            ...shiftData
+          });
+        });
+      }
+    }
+
+    return duplicateShifts;
+  }
 }

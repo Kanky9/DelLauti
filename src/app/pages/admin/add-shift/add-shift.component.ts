@@ -36,18 +36,20 @@ import { LoadingComponent } from '../../../shared/utils/loading/loading.componen
   providers: [
     { provide: LOCALE_ID, useValue: 'es-ES' },  // Aplicar español en la localización general
     { provide: MAT_DATE_LOCALE, useValue: 'es-ES' },  // Aplicar español para Material
-    { provide: MAT_DATE_FORMATS, useValue: {
-      parse: {
-        dateInput: 'DD/MM/YYYY',
-      },
-      display: {
-        dateInput: 'DD/MM/YYYY',  // Formato de fecha
-        monthYearLabel: 'MMMM YYYY',  // Mes y año
-        dateA11yLabel: 'LL',
-        monthYearA11yLabel: 'MMMM YYYY'
+    {
+      provide: MAT_DATE_FORMATS, useValue: {
+        parse: {
+          dateInput: 'DD/MM/YYYY',
+        },
+        display: {
+          dateInput: 'DD/MM/YYYY',  // Formato de fecha
+          monthYearLabel: 'MMMM YYYY',  // Mes y año
+          dateA11yLabel: 'LL',
+          monthYearA11yLabel: 'MMMM YYYY'
+        }
       }
-    }},
-    {provide: MAT_DATE_LOCALE, useValue: 'es-ES'}
+    },
+    { provide: MAT_DATE_LOCALE, useValue: 'es-ES' }
   ]
 })
 export class AddShiftComponent implements OnInit {
@@ -74,7 +76,7 @@ export class AddShiftComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this._shiftService.deleteExpiredShifts();this._locale = 'es-ES';
+    this._shiftService.deleteExpiredShifts(); this._locale = 'es-ES';
     this._adapter.setLocale(this._locale);
   }
   
@@ -124,22 +126,50 @@ export class AddShiftComponent implements OnInit {
   //* Método para guardar los turnos
   async saveShifts(): Promise<void> {
     if (this.shiftForm.valid && this.schedules.length > 0 && this.daysSelected().length > 0) {
-      this._utilSvc.show();
       try {
         const days = this.daysSelected();
         const schedules = this.schedules;
-        await this._shiftService.saveShifts(days, schedules);
-        this._snackBar.open('Turnos guardados con éxito', 'Cerrar', {
-          duration: 3000,
-        });
-        this._router.navigate(['/home']);
+
+        // Verificar si hay duplicados antes de guardar y obtener los duplicados
+        const duplicates = await this._shiftService.checkIfShiftExists(days, schedules);
+
+        if (duplicates.length > 0) {
+          // Formatear los turnos duplicados para mostrarlos
+          const duplicateDetails = duplicates.map(dup =>
+            `Día: ${dup.day.toLocaleDateString('es-ES')} ${dup.scheduleStart} - ${dup.scheduleEnd}<br>`
+          ).join('');
+
+          // Mostrar el modal con la información de los duplicados
+          const dialogRef = this._utilSvc.showMessageDialog(
+            'Ya existen los turnos:',
+            `${duplicateDetails}<br>Elimínalos para poder guardar los nuevos turnos`
+          );
+
+          // Esperar a que se cierre el modal antes de continuar
+          await dialogRef.afterClosed().toPromise();
+        } else {
+          await this._shiftService.saveShifts(days, schedules);
+          const dialogRef = this._utilSvc.showMessageDialog(
+            'Éxito',
+            'Turnos guardados con éxito',
+            'Cerrar',
+            'Ir a Inicio'
+          );
+
+          dialogRef.afterClosed().subscribe(async (result) => {
+            if (result) {
+              await this._router.navigate(['/home']);
+            }
+          });
+        }
       } catch (error) {
         console.error('Error al guardar un turno', error);
-        this._snackBar.open('Hubo un error al guardar un turno', 'Cerrar', {
-          duration: 3000,
-        });
-      } finally {
-        this._utilSvc.hide();
+        const dialogRef = this._utilSvc.showMessageDialog(
+          'Error',
+          'Hubo un error al guardar un turno',
+        );
+
+        await dialogRef.afterClosed().toPromise();
       }
     }
   }
