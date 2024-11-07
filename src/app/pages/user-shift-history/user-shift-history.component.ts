@@ -31,6 +31,7 @@ export class UserShiftHistoryComponent implements OnInit {
   
   upcomingShifts: WritableSignal<Shift[]> = signal<Shift[]>([]);
   pastShifts: WritableSignal<Shift[]> = signal<Shift[]>([]);
+  currentView: WritableSignal<string> = signal<string>('reserved');
   
   private _shiftService = inject(ShiftService);
   private _authService = inject(AuthService);
@@ -104,6 +105,13 @@ export class UserShiftHistoryComponent implements OnInit {
     this.upcomingShifts.set(orderedUpcomingShifts);
   }
 
+  showReserved() {
+    this.currentView.set('reserved');
+  }
+
+  showFinalized() {
+    this.currentView.set('finalized');
+  }
 
   // * Función para manejar la cancelación de turnos
   async onCancelShift(shift: Shift) {

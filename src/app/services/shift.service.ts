@@ -1,5 +1,5 @@
 import { inject, Injectable, signal } from '@angular/core';
-import { addDoc, collection, doc, Firestore, getDocs, query, Timestamp, updateDoc, where } from '@angular/fire/firestore';
+import { addDoc, collection, doc, Firestore, getDocs, query, Timestamp, updateDoc, where, deleteDoc } from '@angular/fire/firestore';
 import { Shift } from '../models/shift.interface';
 import { AuthService } from './auth.service';
 
@@ -102,9 +102,8 @@ export class ShiftService {
   // * Método para obtener turnos reservados
   async getReservedShifts(): Promise<Shift[]> {
     const shiftsCollection = collection(this._firestore, 'shifts');
-    const q = query(shiftsCollection, where('available', '==', false));
-
-    const shiftsSnapshot = await getDocs(q);
+    const shiftsSnapshot = await getDocs(shiftsCollection);
+    
     const shiftsReserved = await Promise.all(
       shiftsSnapshot.docs.map(async (doc) => {
         const shiftData = { id: doc.id, ...doc.data() } as Shift;
@@ -148,6 +147,15 @@ export class ShiftService {
     this.shift.update((prev) =>
       prev.map((shift) => (shift.id === shiftId ? { ...shift, available: true, userId: null } : shift))
     );
+  }
+
+   // * Método para eliminar un turno
+  async deleteShift(shiftId: string) {
+    const shiftDoc = doc(this._firestore, `shifts/${shiftId}`);
+    await deleteDoc(shiftDoc);
+
+    // Actualiza el signal de turnos
+    this.shift.update((prev) => prev.filter((shift) => shift.id !== shiftId));
   }
 
   // * Método para eliminar turnos pasados

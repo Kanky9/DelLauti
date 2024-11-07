@@ -2,12 +2,12 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 35px;
 
   h2{
     width: 100%;
     border-bottom: 3px solid #f4d508;
     font-weight: 600;
+    margin-top: 30px;
   }
 
   h3{
@@ -91,6 +91,56 @@
     font-style: italic;
     margin-top: 10px;
     color: #303030;
+  }
+
+  .menu {
+    width: 95%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 10px 0 0 0;
+
+    button {
+      text-align: center;
+      font-size: clamp(10px, 3vw, 18px);
+      flex-wrap: wrap;
+      color: #303030;
+      background: transparent;
+      font-weight: 700;
+      border: none;
+      text-transform: uppercase;
+      text-decoration: none;
+      letter-spacing: 0.15em;
+      display: inline-block;
+      padding: 5px 10px;
+      position: relative;
+      cursor: pointer;
+
+      &:after {
+        background: none repeat scroll 0 0 transparent;
+        bottom: 0;
+        content: "";
+        display: block;
+        height: 3px;
+        left: 50%;
+        position: absolute;
+        background: #fff;
+        transition: 0.3s ease 0s, left 0.3s ease 0s;
+        width: 0;
+      }
+
+      &:hover:after {
+        width: 100%;
+        left: 0;
+        background-color: #F4D508;
+      }
+
+      &.active:after {
+        width: 100%;
+        left: 0;
+        background-color: #F4D508;
+      }
+    }
   }
 }
 

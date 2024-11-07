@@ -1,63 +1,70 @@
-<section class=" turnero-historial">
-    <div class="back-link">
-        <a [routerLink]="['/home']" routerLinkActive="router-link-active">
-            <i class="fa fa-arrow-left"></i>
-        </a>
-    </div>
-        <h2>Historial de Turnos</h2>
-    
-        <!-- Turnos reservados futuros -->
-        <h3>Turnos Reservados</h3>
-        @if(upcomingShifts().length > 0) {
-        <table>
-            <thead>
-                <tr>
-                    <th>Día</th>
-                    <th>Horario</th>
-                    <!-- <th>Estado</th> -->
-                    <th>Acción</th>
-                </tr>
-            </thead>
-            <tbody>
-                @for (shift of upcomingShifts(); track shift) {
-                <tr>
-                    <td>{{ shift.day | date: 'mediumDate' }}</td>
-                    <td>{{ shift.scheduleStart }} - {{ shift.scheduleEnd }}</td>
-                    <!-- <td>Reservado</td> -->
-                    <td>
-                        <button mat-button (click)="onCancelShift(shift)">Cancelar</button>
-                    </td>
-                </tr>
-                }
-            </tbody>
+<section class="turnero-historial">
+  <div class="back-link">
+    <a [routerLink]="['/home']" routerLinkActive="router-link-active">
+      <i class="fa fa-arrow-left"></i>
+    </a>
+  </div>
+  <h2>Historial de Turnos</h2>
+
+  <div class="menu">
+    <button (click)="showReserved()" [class.active]="currentView() === 'reserved'">Reservados</button>
+    <button (click)="showFinalized()" [class.active]="currentView() === 'finalized'">Finalizados</button>
+  </div>
+
+  @if(currentView() === 'reserved'){    
+      <div>
+            @if(upcomingShifts().length > 0) {
+            <table>
+                <thead>
+                    <tr>
+                        <th>Día</th>
+                        <th>Horario</th>
+                        <!-- <th>Estado</th> -->
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (shift of upcomingShifts(); track shift) {
+                    <tr>
+                        <td>{{ shift.day | date: 'mediumDate' }}</td>
+                        <td>{{ shift.scheduleStart }} - {{ shift.scheduleEnd }}</td>
+                        <!-- <td>Reservado</td> -->
+                        <td>
+                            <button mat-button (click)="onCancelShift(shift)">Cancelar</button>
+                        </td>
+                    </tr>
+                    }
+                </tbody>
             
-        </table>
-        } @else {
-        <p>No tienes turnos reservados por el momento.</p>
-        }
-    
-        <!-- Turnos finalizados -->
-        <h3>Turnos Finalizados</h3>
-        @if(pastShifts().length > 0) {
-        <table>
-            <thead>
-                <tr>
-                    <th>Día</th>
-                    <th>Horario</th>
-                    <!-- <th>Estado</th> -->
-                </tr>
-            </thead>
-            <tbody>
-                @for (shift of pastShifts(); track shift) {
-                <tr>
-                    <td>{{ shift.day | date: 'mediumDate' }}</td>
-                    <td>{{ shift.scheduleStart }} - {{ shift.scheduleEnd }}</td>
-                    <!-- <td>Finalizado</td> -->
-                </tr>
-                }
-            </tbody>
-        </table>
-        } @else {
-        <p>No tienes turnos finalizados.</p>
-        }
+            </table>
+            } @else {
+            <p>No tienes turnos reservados por el momento.</p>
+            }
+        </div>
+    }
+
+  @if(currentView() === 'finalized'){
+      <div>
+          @if(pastShifts().length > 0) {
+              <table>
+                  <thead>
+                      <tr>
+                          <th>Día</th>
+                          <th>Horario</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (shift of pastShifts(); track shift) {
+                            <tr>
+                                <td>{{ shift.day | date: 'mediumDate' }}</td>
+                                <td>{{ shift.scheduleStart }} - {{ shift.scheduleEnd }}</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            } @else {
+                <p>No tienes turnos finalizados.</p>
+            }
+        </div>
+    }
 </section>
