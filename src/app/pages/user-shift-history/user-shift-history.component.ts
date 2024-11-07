@@ -116,7 +116,7 @@ export class UserShiftHistoryComponent implements OnInit {
   // * Función para manejar la cancelación de turnos
   async onCancelShift(shift: Shift) {
     const dialogRef = this._utilsService.showMessageDialog(
-      "Confirmación de Cancelación",
+      "Cancelar turno",
       "¿Estás seguro de cancelar tu turno?",
       "Cerrar",
       "Aceptar"

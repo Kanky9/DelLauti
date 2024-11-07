@@ -114,7 +114,7 @@ export class ShiftAdminComponent implements OnInit {
   // Método para eliminar un turno no reservado
   async onDeleteShift(shift: Shift) {
     const dialogRef = this._utilsService.showMessageDialog(
-      'Confirmación de Eliminación',
+      'Eliminar turno',
       '¿Estás seguro de eliminar este turno?',
       'Cerrar',
       'Eliminar'
