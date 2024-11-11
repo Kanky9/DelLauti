@@ -34,16 +34,16 @@ import { LoadingComponent } from '../../../shared/utils/loading/loading.componen
   templateUrl: './add-shift.component.html',
   styleUrls: ['./add-shift.component.scss'],
   providers: [
-    { provide: LOCALE_ID, useValue: 'es-ES' },  // Aplicar español en la localización general
-    { provide: MAT_DATE_LOCALE, useValue: 'es-ES' },  // Aplicar español para Material
+    { provide: LOCALE_ID, useValue: 'es-ES' },
+    { provide: MAT_DATE_LOCALE, useValue: 'es-ES' },
     {
       provide: MAT_DATE_FORMATS, useValue: {
         parse: {
           dateInput: 'DD/MM/YYYY',
         },
         display: {
-          dateInput: 'DD/MM/YYYY',  // Formato de fecha
-          monthYearLabel: 'MMMM YYYY',  // Mes y año
+          dateInput: 'DD/MM/YYYY',  
+          monthYearLabel: 'MMMM YYYY',  
           dateA11yLabel: 'LL',
           monthYearA11yLabel: 'MMMM YYYY'
         }
@@ -86,6 +86,7 @@ export class AddShiftComponent implements OnInit {
     }
     return '';
   }
+
   //* Método para agregar un día a la lista desde el mat-calendar
   addDay(day: Date | null) {
     if (day) {
@@ -126,6 +127,7 @@ export class AddShiftComponent implements OnInit {
   //* Método para guardar los turnos
   async saveShifts(): Promise<void> {
     if (this.shiftForm.valid && this.schedules.length > 0 && this.daysSelected().length > 0) {
+      this._utilSvc.show();
       try {
         const days = this.daysSelected();
         const schedules = this.schedules;
@@ -170,6 +172,8 @@ export class AddShiftComponent implements OnInit {
         );
 
         await dialogRef.afterClosed().toPromise();
+      } finally {
+        this._utilSvc.hide();  // Ocultar carga
       }
     }
   }
