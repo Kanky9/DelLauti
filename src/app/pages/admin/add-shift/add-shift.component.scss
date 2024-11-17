@@ -175,6 +175,21 @@ ul {
   opacity: 1; // Mostrar cuando se añade la clase 'show'
 }
 
+::ng-deep .mat-calendar-body-selected {
+    background-color: #F4D508 !important;
+    color: #000 !important;
+}
+
+::ng-deep .mat-calendar-body-selected.mat-calendar-body-today {
+    box-shadow: inset 0 0 0 1px #F4D508 !important;
+    background-color: #F4D508 !important;
+    color: #000 !important;
+}
+
+::ng-deep .mat-calendar-body-today:not(.mat-calendar-body-selected):not(.mat-calendar-body-comparison-identical) {
+    border-color: #F4D508 !important;
+}
+
 @media (max-width: 500px) {
   .cont {
     margin-top: 75px;

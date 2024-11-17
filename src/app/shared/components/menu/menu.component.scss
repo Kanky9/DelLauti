@@ -54,13 +54,19 @@
 }
 
 .items__nav{
-    text-align: center; 
+    text-align: center;
+    justify-content: center;
+    align-items: center; 
     margin: 0;
+    padding: 0;
+    margin-right: 34px;
 }
 
 .items__ul{ 
-    width: 600px;
+    width: 100%;
     text-align: center;
+    justify-content: center;
+    align-items: center;
 }
 
 .items__li{
