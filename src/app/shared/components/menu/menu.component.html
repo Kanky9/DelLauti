@@ -82,7 +82,7 @@
         <!-- Menú responsive que aparece al hacer clic en el botón -->
         <nav class="responsive-menu" [ngClass]="{'active': isClicked}">
             <ul class="navbar-nav">
-                @if(isAdmin()){
+                @if(!isAdmin()){
                     <li class="nav-item">
                         <a class="nav-link active" (click)="onShiftsClick()" routerLink="/turnos">Reservar turnos</a>
                     </li>
@@ -100,7 +100,7 @@
                     </li>
                 }
 
-                @if(!isAdmin()){
+                @if(!isAdmin() && isAuthenticated()){
                 <li class="nav-item">
                     <a class="nav-link active" routerLink="/shift-history">Historial de turnos</a>
                 </li>
@@ -113,11 +113,11 @@
                     </li>
                 }
 
-
-                <li class="nav-item">
-                    <a class="nav-link active" [routerLink]="['/help']" routerLinkActive="router-link-active">Ayuda</a>
-                </li>
-
+                @if(!isAdmin()){
+                  <li class="nav-item">
+                      <a class="nav-link active" [routerLink]="['/help']" routerLinkActive="router-link-active">Ayuda</a>
+                  </li>
+                }
 
                 @if(!isAuthenticated()){
                     <li class="nav-item">
