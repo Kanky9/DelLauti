@@ -47,16 +47,22 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/user-shift-history/user-shift-history.component').then(m => m.UserShiftHistoryComponent),
     canActivate: [AuthGuard]
   },
-  
+
   {
-    path: 'gallery',
-    children: [
-      {
-        path: ':category',
-        loadComponent: () => import('./pages/gallery/gallery.component').then(m => m.GalleryComponent)
-      }
-    ]
+    path: 'help',
+    loadComponent: () => import('./shared/components/help/help.component').then(m => m.HelpComponent),
+    canActivate: [AuthGuard]
   },
+  
+  // {
+  //   path: 'gallery',
+  //   children: [
+  //     {
+  //       path: ':category',
+  //       loadComponent: () => import('./pages/gallery/gallery.component').then(m => m.GalleryComponent)
+  //     }
+  //   ]
+  // },
 
   {
     path: '**',

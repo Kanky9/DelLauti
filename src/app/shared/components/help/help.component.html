@@ -1,0 +1,76 @@
+<section>
+
+    <div class="back-link">
+        <a [routerLink]="['/home']" routerLinkActive="router-link-active">
+            <i class="fa fa-arrow-left"></i>
+        </a>
+    </div>
+
+    <div class="cont">
+
+      <div class="card" style="--clr: #64CF36">
+        <div class="img-box">
+          <img src="../../../assets/img/img-Ayuda/reservarTurno.png">
+        </div>
+        <div class="content">
+          <h2>Reservar Turno</h2>
+          <p>
+            En este apartado, aprenderás como reservar un turno.
+          </p>
+          <a (click)="openVideoReservar(videoUrl)">Click aquí</a>
+        </div>
+      </div>
+
+      <div class="card" style="--clr: #64CF36">
+            <div class="img-box">
+                <img src="../../../assets/img/img-Ayuda/verTurno.png">
+            </div>
+            <div class="content">
+                <h2>Ver Turno</h2>
+                <p>
+                    En este apartado, aprenderás como ver los datos de tu turno.
+                </p>
+                <a (click)="openVideoVer(videoUrl)">Click aquí</a>
+            </div>
+        </div>
+
+        <div class="card" style="--clr: #03A9F4">
+            <div class="img-box">
+                <img src="../../../assets/img/img-Ayuda/crearCuenta.png">
+            </div>
+            <div class="content">
+                <h2>Crear cuenta</h2>
+                <p>
+                    En este apartado, aprenderás como crearte un usuario.
+                </p>
+                <a (click)="openVideoUser(videoUrl)">Click aquí</a>
+            </div>
+        </div>
+
+        <div class="card" style="--clr: #03A9F4">
+          <div class="img-box">
+            <img src="../../../assets/img/img-Ayuda/crearCuentaGoogle.png">
+          </div>
+          <div class="content">
+            <h2>Crear cuenta con Google</h2>
+            <p>
+              En este apartado, aprenderás como crearte un usuario con Google.
+            </p>
+            <a (click)="openVideoGoogle(videoUrl)">Click aquí</a>
+          </div>
+        </div>
+
+        <div class="card" style="--clr: #FF3131">
+            <div class="img-box">
+                <img src="../../../assets/img/img-Ayuda/cancelarTurno.png">
+            </div>
+            <div class="content">
+                <h2>Cancelar turno</h2>
+                <p>
+                    En este apartado, aprenderás como cancelar tu turno, y además, como dejar un mensaje de aviso.
+                </p>
+                <a (click)="openVideoCancelar(videoUrl)">Click aquí</a>
+            </div>
+        </div>
+    </div>
+</section>
