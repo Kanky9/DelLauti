@@ -9,7 +9,6 @@ import { Timestamp } from 'firebase/firestore';
 import localeEs from '@angular/common/locales/es';
 import { UtilsService } from '../../../services/utils.service';
 
-// Registrar el locale 'es' para fechas en español
 registerLocaleData(localeEs);
 
 @Component({
@@ -28,10 +27,94 @@ registerLocaleData(localeEs);
 })
 export class ShiftAdminComponent implements OnInit {
 
-  shiftsReserved: WritableSignal<Shift[]> = signal<Shift[]>([]); 
+  shiftsReserved: WritableSignal<Shift[]> = signal<Shift[]>([]);
   shiftsFinalized: WritableSignal<Shift[]> = signal<Shift[]>([]);
-  shiftsNotReserved: WritableSignal<Shift[]> = signal<Shift[]>([]); 
-  currentView: WritableSignal<string> = signal<string>('reserved');
+  shiftsNotReserved: WritableSignal<Shift[]> = signal<Shift[]>([]);
+  currentView: WritableSignal<'reserved' | 'finalized' | 'notReserved'> = signal<'reserved' | 'finalized' | 'notReserved'>('reserved');
+  filterQuery: WritableSignal<string> = signal<string>('');
+  filterDate: WritableSignal<string> = signal<string>('');
+
+  readonly currentShifts = computed(() => {
+    switch (this.currentView()) {
+      case 'reserved':
+        return this.shiftsReserved();
+      case 'finalized':
+        return this.shiftsFinalized();
+      default:
+        return this.shiftsNotReserved();
+    }
+  });
+
+  readonly filteredCurrentShifts = computed(() => {
+    const shifts = this.currentShifts();
+    const query = this.filterQuery().trim().toLowerCase();
+    const dateFilter = this.filterDate();
+
+    return shifts.filter((shift) => {
+      const shiftDate = shift.day instanceof Date ? shift.day : new Date(shift.day);
+
+      if (dateFilter && this.toInputDate(shiftDate) !== dateFilter) {
+        return false;
+      }
+
+      if (!query) {
+        return true;
+      }
+
+      const searchableParts = [
+        shift.scheduleStart,
+        shift.scheduleEnd,
+        shift.userName ?? '',
+        shift.userEmail ?? '',
+        shiftDate.toLocaleDateString('es-ES', {
+          weekday: 'long',
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        })
+      ];
+
+      return searchableParts.some(part => part.toLowerCase().includes(query));
+    });
+  });
+
+  readonly hasActiveFilters = computed(() =>
+    this.filterQuery().trim().length > 0 || this.filterDate().length > 0
+  );
+
+  readonly currentViewLabel = computed(() => {
+    switch (this.currentView()) {
+      case 'reserved':
+        return 'Turnos reservados';
+      case 'finalized':
+        return 'Turnos finalizados';
+      default:
+        return 'Turnos disponibles';
+    }
+  });
+
+  readonly currentViewDescription = computed(() => {
+    switch (this.currentView()) {
+      case 'reserved':
+        return 'Clientes con turno confirmado pendiente de atencion.';
+      case 'finalized':
+        return 'Historial de atenciones ya completadas.';
+      default:
+        return 'Bloques libres que aun pueden reservarse.';
+    }
+  });
+
+  readonly emptyMessage = computed(() => {
+    switch (this.currentView()) {
+      case 'reserved':
+        return 'No hay turnos reservados por el momento.';
+      case 'finalized':
+        return 'No hay turnos finalizados por el momento.';
+      default:
+        return 'No hay turnos no reservados por el momento.';
+    }
+  });
+
   private _shiftService = inject(ShiftService);
   private _authService = inject(AuthService);
   private _utilsService = inject(UtilsService);
@@ -39,7 +122,7 @@ export class ShiftAdminComponent implements OnInit {
   ngOnInit(): void {
     const user = this._authService.getUser;
 
-    if (!user?.admin) {  // Verificamos si user es nulo y si no es admin
+    if (!user?.admin) {
       alert('Acceso denegado. Solo los administradores pueden ver los turnos reservados.');
       return;
     }
@@ -71,23 +154,21 @@ export class ShiftAdminComponent implements OnInit {
           ...shift,
           userName,
           userEmail,
-          day // Ya es un objeto Date
+          day
         };
       })
     );
 
     const now = new Date();
-    // Filtrar solo los turnos reservados (que tengan userId)
     const reservedShifts = shiftsWithClients.filter(shift => shift.userId && this.isFutureShift(shift, now));
     const finalizedShifts = shiftsWithClients.filter(shift => shift.userId && !this.isFutureShift(shift, now));
     const notReservedShifts = shiftsWithClients.filter(shift => !shift.userId && this.isFutureShift(shift, now));
 
-    this.shiftsReserved.set(this.sortShifts(reservedShifts));  // Mantener el orden normal
-    this.shiftsFinalized.set(this.sortShifts(finalizedShifts, true));  // Invertir el orden para los finalizados
-    this.shiftsNotReserved.set(this.sortShifts(notReservedShifts));  // Mantener el orden normal
+    this.shiftsReserved.set(this.sortShifts(reservedShifts));
+    this.shiftsFinalized.set(this.sortShifts(finalizedShifts, true));
+    this.shiftsNotReserved.set(this.sortShifts(notReservedShifts));
   }
 
-  // Función para determinar si un turno es futuro
   private isFutureShift(shift: Shift, now: Date): boolean {
     const shiftDateTime = new Date(shift.day);
     const [hours, minutes] = shift.scheduleEnd.split(':').map(Number);
@@ -96,26 +177,56 @@ export class ShiftAdminComponent implements OnInit {
     return shiftDateTime.getTime() > now.getTime();
   }
 
-  // Función para ordenar turnos por día y horario
   private sortShifts(shifts: Shift[], invertOrder = false): Shift[] {
     const sortedShifts = shifts.sort((a, b) => {
       const dayComparison = a.day.getTime() - b.day.getTime();
-      if (dayComparison !== 0) return dayComparison;
+      if (dayComparison !== 0) {
+        return dayComparison;
+      }
 
       const schedulesA = a.scheduleStart.split(':').map(Number);
       const schedulesB = b.scheduleStart.split(':').map(Number);
       return schedulesA[0] - schedulesB[0] || schedulesA[1] - schedulesB[1];
     });
 
-    // Invertir el orden si se desea
     return invertOrder ? sortedShifts.reverse() : sortedShifts;
   }
 
-  // Método para eliminar un turno no reservado
+  private toInputDate(date: Date): string {
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  trackShift(index: number, shift: Shift): string {
+    if (shift.id) {
+      return shift.id;
+    }
+
+    const dayValue = shift.day instanceof Date ? shift.day.getTime() : new Date(shift.day).getTime();
+    return `${dayValue}-${shift.scheduleStart}-${shift.scheduleEnd}-${index}`;
+  }
+
+  onFilterQueryInput(event: Event): void {
+    const value = (event.target as HTMLInputElement | null)?.value ?? '';
+    this.filterQuery.set(value);
+  }
+
+  onFilterDateInput(event: Event): void {
+    const value = (event.target as HTMLInputElement | null)?.value ?? '';
+    this.filterDate.set(value);
+  }
+
+  clearFilters(): void {
+    this.filterQuery.set('');
+    this.filterDate.set('');
+  }
+
   async onDeleteShift(shift: Shift) {
     const dialogRef = this._utilsService.showMessageDialog(
       'Eliminar turno',
-      '¿Estás seguro de eliminar este turno?',
+      'Estas seguro de eliminar este turno?',
       'Cerrar',
       'Eliminar'
     );
@@ -123,21 +234,24 @@ export class ShiftAdminComponent implements OnInit {
     dialogRef.afterClosed().subscribe(async (confirmed) => {
       if (confirmed) {
         await this._shiftService.deleteShift(shift.id!);
-        this.loadShifts(); // Recargar turnos después de la eliminación
+        this.loadShifts();
       }
     });
   }
 
-  // * Métodos para cambiar la vista
+  setView(view: 'reserved' | 'finalized' | 'notReserved') {
+    this.currentView.set(view);
+  }
+
   showReserved() {
-    this.currentView.set('reserved');
+    this.setView('reserved');
   }
 
   showFinalized() {
-    this.currentView.set('finalized');
+    this.setView('finalized');
   }
 
   showNotReserved() {
-    this.currentView.set('notReserved');
+    this.setView('notReserved');
   }
 }

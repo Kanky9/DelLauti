@@ -2,6 +2,7 @@ import { Component, Inject, inject, LOCALE_ID, OnInit, signal, WritableSignal } 
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ShiftService } from '../../../services/shift.service';
 import { CommonModule, registerLocaleData } from '@angular/common';
+import { firstValueFrom } from 'rxjs';
 import localeEs from '@angular/common/locales/es';
 
 registerLocaleData(localeEs, 'es');  // <- Asegúrate de registrar el locale 'es'
@@ -42,8 +43,8 @@ import { LoadingComponent } from '../../../shared/utils/loading/loading.componen
           dateInput: 'DD/MM/YYYY',
         },
         display: {
-          dateInput: 'DD/MM/YYYY',  
-          monthYearLabel: 'MMMM YYYY',  
+          dateInput: 'DD/MM/YYYY',
+          monthYearLabel: 'MMMM YYYY',
           dateA11yLabel: 'LL',
           monthYearA11yLabel: 'MMMM YYYY'
         }
@@ -54,6 +55,7 @@ import { LoadingComponent } from '../../../shared/utils/loading/loading.componen
 })
 export class AddShiftComponent implements OnInit {
 
+  scheduleMode: 'manual' | 'range' = 'manual';
   shiftForm!: FormGroup;
   schedules: { inicio: string; fin: string }[] = [];
   daysSelected: WritableSignal<Date[]> = signal<Date[]>([]);
@@ -72,6 +74,9 @@ export class AddShiftComponent implements OnInit {
     this.shiftForm = this._fb.group({
       scheduleStart: [''],
       scheduleEnd: [''],
+      rangeStart: [''],
+      rangeEnd: [''],
+      slotDuration: [30],
     });
   }
 
@@ -79,12 +84,16 @@ export class AddShiftComponent implements OnInit {
     this._shiftService.deleteExpiredShifts(); this._locale = 'es-ES';
     this._adapter.setLocale(this._locale);
   }
-  
+
   getDateFormatString(): string {
     if (this._locale === 'es-ES') {
       return 'DD/MM/YYYY';
     }
     return '';
+  }
+
+  setScheduleMode(mode: 'manual' | 'range'): void {
+    this.scheduleMode = mode;
   }
 
   //* Método para agregar un día a la lista desde el mat-calendar
@@ -107,21 +116,165 @@ export class AddShiftComponent implements OnInit {
   }
 
   //* Método para agregar un horario a la lista
-  addSchedules() {
+  addSchedules(): void {
     const { scheduleStart, scheduleEnd } = this.shiftForm.value;
-    if (scheduleStart && scheduleEnd) {
-      const inicio = new Date(`1970-01-01T${scheduleStart}:00`);
-      const fin = new Date(`1970-01-01T${scheduleEnd}:00`);
-      this.schedules.push({
-        inicio: inicio.toTimeString().substring(0, 5),
-        fin: fin.toTimeString().substring(0, 5),
-      });
+    if (!scheduleStart || !scheduleEnd) {
+      this.showScheduleWarning('Debes indicar horario de inicio y fin.');
+      return;
     }
+
+    if (scheduleStart >= scheduleEnd) {
+      this.showScheduleWarning('La hora de inicio debe ser menor a la hora de fin.');
+      return;
+    }
+
+    const addedCount = this.mergeSchedules([{ inicio: scheduleStart, fin: scheduleEnd }]);
+    if (addedCount === 0) {
+      this.showScheduleWarning('Ese bloque horario ya fue agregado.');
+      return;
+    }
+
+    this.shiftForm.patchValue({
+      scheduleStart: '',
+      scheduleEnd: ''
+    });
+  }
+
+  async addSchedulesFromRange(): Promise<void> {
+    const { rangeStart, rangeEnd, slotDuration } = this.shiftForm.value;
+
+    if (!rangeStart || !rangeEnd) {
+      this.showScheduleWarning('Debes indicar hora de inicio y fin del rango.');
+      return;
+    }
+
+    const duration = Number(slotDuration);
+    if (!Number.isInteger(duration) || duration <= 0) {
+      this.showScheduleWarning('La duracion del turno debe ser un numero entero mayor a 0.');
+      return;
+    }
+
+    if (rangeStart >= rangeEnd) {
+      this.showScheduleWarning('La hora de inicio del rango debe ser menor a la hora de fin.');
+      return;
+    }
+
+    const startMinutes = this.getMinutesFromTime(rangeStart);
+    const endMinutes = this.getMinutesFromTime(rangeEnd);
+    let cursor = startMinutes;
+    const generatedSchedules: { inicio: string; fin: string }[] = [];
+
+    while (cursor + duration <= endMinutes) {
+      generatedSchedules.push({
+        inicio: this.formatTime(cursor),
+        fin: this.formatTime(cursor + duration)
+      });
+      cursor += duration;
+    }
+
+    const remainder = endMinutes - cursor;
+    let extendedEnd = false;
+
+    if (remainder > 0) {
+      const shouldExtend = await this.askToExtendRangeEnd(cursor, rangeEnd, duration, remainder);
+      if (shouldExtend) {
+        generatedSchedules.push({
+          inicio: this.formatTime(cursor),
+          fin: this.formatTime(cursor + duration)
+        });
+        extendedEnd = true;
+      }
+    }
+
+    if (generatedSchedules.length === 0) {
+      this.showScheduleWarning('Con ese rango no se puede generar ningun turno.');
+      return;
+    }
+
+    const addedCount = this.mergeSchedules(generatedSchedules);
+    if (addedCount === 0) {
+      this.showScheduleWarning('Los horarios generados ya existian en la lista.');
+      return;
+    }
+
+    if (extendedEnd) {
+      this.showScheduleInfo(`Se agregaron ${addedCount} turno(s) y se extendio el horario final.`);
+    } else {
+      this.showScheduleInfo(`Se agregaron ${addedCount} turno(s) desde el rango seleccionado.`);
+    }
+
+    this.shiftForm.patchValue({
+      rangeStart: '',
+      rangeEnd: ''
+    });
   }
 
   //* Método para eliminar un horario de la lista
   deleteSchedules(index: number) {
     this.schedules.splice(index, 1);
+  }
+
+  private mergeSchedules(newSchedules: { inicio: string; fin: string }[]): number {
+    const initialLength = this.schedules.length;
+    const schedulesMap = new Map(
+      this.schedules.map(schedule => [`${schedule.inicio}-${schedule.fin}`, schedule])
+    );
+
+    newSchedules.forEach((schedule) => {
+      const key = `${schedule.inicio}-${schedule.fin}`;
+      if (!schedulesMap.has(key)) {
+        schedulesMap.set(key, schedule);
+      }
+    });
+
+    this.schedules = Array.from(schedulesMap.values()).sort(
+      (a, b) => this.getMinutesFromTime(a.inicio) - this.getMinutesFromTime(b.inicio)
+    );
+
+    return this.schedules.length - initialLength;
+  }
+
+  private getMinutesFromTime(time: string): number {
+    const [hours, minutes] = time.split(':').map(Number);
+    return hours * 60 + minutes;
+  }
+
+  private formatTime(totalMinutes: number): string {
+    const hours = Math.floor(totalMinutes / 60).toString().padStart(2, '0');
+    const minutes = (totalMinutes % 60).toString().padStart(2, '0');
+    return `${hours}:${minutes}`;
+  }
+
+  private async askToExtendRangeEnd(
+    nextStart: number,
+    originalEnd: string,
+    duration: number,
+    remainder: number
+  ): Promise<boolean> {
+    const dialogRef = this._utilSvc.showMessageDialog(
+      'Ultimo turno fuera del rango',
+      `Quedan ${remainder} minuto(s) sin completar.<br><br>` +
+      `Para incluir un ultimo turno de ${duration} min, el horario final pasaria de ${originalEnd} a ${this.formatTime(nextStart + duration)}.`,
+      'No incluir ultimo',
+      'Extender horario final'
+    );
+
+    const result = await firstValueFrom(dialogRef.afterClosed());
+    return !!result;
+  }
+
+  private showScheduleWarning(message: string): void {
+    this._snackBar.open(message, 'Cerrar', {
+      duration: 3200,
+      panelClass: 'snackbar-error'
+    });
+  }
+
+  private showScheduleInfo(message: string): void {
+    this._snackBar.open(message, 'Cerrar', {
+      duration: 3200,
+      panelClass: 'snackbar-success'
+    });
   }
 
   //* Método para guardar los turnos

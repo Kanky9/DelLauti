@@ -22,9 +22,9 @@ registerLocaleData(localeEs, 'es');
   standalone: true,
   imports: [
     CommonModule,
-    MatDatepickerModule, 
-    MatFormFieldModule,  
-    MatInputModule,      
+    MatDatepickerModule,
+    MatFormFieldModule,
+    MatInputModule,
     MatNativeDateModule,
     RouterLink,
     ReactiveFormsModule,
@@ -36,11 +36,11 @@ registerLocaleData(localeEs, 'es');
   providers: [
     { provide: LOCALE_ID, useValue: 'es' },
     {provide: MAT_DATE_LOCALE, useValue: 'es-ES'}
-    
+
   ]
 })
 export class AvailableShiftComponent implements OnInit {
-  
+
   shiftsAvailable: WritableSignal<Shift[]> = signal<Shift[]>([]);
   selectedDay: Date | null = null;
 
@@ -73,17 +73,32 @@ export class AvailableShiftComponent implements OnInit {
 
   // Método para obtener los turnos disponibles
   searchShiftsAvailable(dia: Date | null) {
-    if (dia) {
-      this._shiftService.getAvailableShifts(dia).then(turnos => {
-        const turnosOrdenados = turnos.sort((a, b) => {
-          const horarioA = a.scheduleStart.split(':').map(Number);
-          const horarioB = b.scheduleStart.split(':').map(Number);
-          return horarioA[0] - horarioB[0] || horarioA[1] - horarioB[1];
-        });
-
-        this.shiftsAvailable.set(turnosOrdenados);
-      });
+    if (!dia) {
+      this.shiftsAvailable.set([]);
+      return;
     }
+
+    this._shiftService.getAvailableShifts(dia).then(turnos => {
+      const turnosOrdenados = turnos.sort((a, b) => {
+        const horarioA = a.scheduleStart.split(':').map(Number);
+        const horarioB = b.scheduleStart.split(':').map(Number);
+        return horarioA[0] - horarioB[0] || horarioA[1] - horarioB[1];
+      });
+
+      this.shiftsAvailable.set(turnosOrdenados);
+    }).catch((error) => {
+      console.error('Error al obtener turnos disponibles', error);
+      this.shiftsAvailable.set([]);
+    });
+  }
+
+  trackShift(index: number, shift: Shift): string {
+    if (shift.id) {
+      return shift.id;
+    }
+
+    const dayValue = shift.day instanceof Date ? shift.day.getTime() : new Date(shift.day).getTime();
+    return `${dayValue}-${shift.scheduleStart}-${shift.scheduleEnd}-${index}`;
   }
 
   // Método para abrir el modal de confirmación antes de reservar el turno
@@ -110,7 +125,7 @@ export class AvailableShiftComponent implements OnInit {
   // Método para reservar el turno
   bookShift(turno: Shift) {
     const usuario = this._authService.getUser;
-    
+
     if (usuario) {
       const clienteId = usuario.id;
 
@@ -128,12 +143,12 @@ export class AvailableShiftComponent implements OnInit {
         );
 
         dialogRef.afterClosed().subscribe(async(result) => {
-          if (result) {  
+          if (result) {
             await this.router.navigate(['/home']);
           }
         });
 
-        this.searchShiftsAvailable(this.selectedDay);  
+        this.searchShiftsAvailable(this.selectedDay);
       });
     }
   }

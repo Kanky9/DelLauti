@@ -4,67 +4,64 @@
       <i class="fa fa-arrow-left"></i>
     </a>
   </div>
-  <h2>Historial de Turnos</h2>
+
+  <header class="header">
+    <h2>Historial de turnos</h2>
+    <p>Consulta tus proximos turnos y el historial de atenciones.</p>
+  </header>
 
   <div class="menu">
-    <button (click)="showReserved()" [class.active]="currentView() === 'reserved'">Reservados</button>
-    <button (click)="showFinalized()" [class.active]="currentView() === 'finalized'">Finalizados</button>
+    <button type="button" (click)="showReserved()" [class.active]="currentView() === 'reserved'">
+      <span>Reservados</span>
+      <strong>{{ upcomingShifts().length }}</strong>
+    </button>
+    <button type="button" (click)="showFinalized()" [class.active]="currentView() === 'finalized'">
+      <span>Finalizados</span>
+      <strong>{{ pastShifts().length }}</strong>
+    </button>
   </div>
 
-  @if(currentView() === 'reserved'){    
-      <div>
-            @if(upcomingShifts().length > 0) {
-            <table>
-                <thead>
-                    <tr>
-                        <th>Día</th>
-                        <th>Horario</th>
-                        <!-- <th>Estado</th> -->
-                        <th>Acción</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @for (shift of upcomingShifts(); track shift) {
-                    <tr>
-                        <td>{{ shift.day | date: 'mediumDate' }}</td>
-                        <td>{{ shift.scheduleStart }} - {{ shift.scheduleEnd }}</td>
-                        <!-- <td>Reservado</td> -->
-                        <td>
-                            <button mat-button (click)="onCancelShift(shift)">Cancelar</button>
-                        </td>
-                    </tr>
-                    }
-                </tbody>
-            
-            </table>
-            } @else {
-            <p>No tienes turnos reservados por el momento.</p>
-            }
-        </div>
-    }
+  @if(currentView() === 'reserved'){
+    <div class="content">
+      @if(upcomingShifts().length > 0) {
+        <ul class="shift-list">
+          @for(shift of upcomingShifts(); track trackUserShift($index, shift)) {
+            <li>
+              <article class="shift-card shift-card--upcoming">
+                <div class="shift-card__main">
+                  <h3>{{ shift.day | date: 'fullDate' }}</h3>
+                  <p>{{ shift.scheduleStart }} - {{ shift.scheduleEnd }}</p>
+                </div>
+                <button type="button" (click)="onCancelShift(shift)">Cancelar turno</button>
+              </article>
+            </li>
+          }
+        </ul>
+      } @else {
+        <p class="no-shift">No tienes turnos reservados por el momento.</p>
+      }
+    </div>
+  }
 
   @if(currentView() === 'finalized'){
-      <div>
-          @if(pastShifts().length > 0) {
-              <table>
-                  <thead>
-                      <tr>
-                          <th>Día</th>
-                          <th>Horario</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @for (shift of pastShifts(); track shift) {
-                            <tr>
-                                <td>{{ shift.day | date: 'mediumDate' }}</td>
-                                <td>{{ shift.scheduleStart }} - {{ shift.scheduleEnd }}</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            } @else {
-                <p>No tienes turnos finalizados.</p>
-            }
-        </div>
-    }
+    <div class="content">
+      @if(pastShifts().length > 0) {
+        <ul class="shift-list">
+          @for(shift of pastShifts(); track trackUserShift($index, shift)) {
+            <li>
+              <article class="shift-card shift-card--past">
+                <div class="shift-card__main">
+                  <h3>{{ shift.day | date: 'fullDate' }}</h3>
+                  <p>{{ shift.scheduleStart }} - {{ shift.scheduleEnd }}</p>
+                </div>
+                <span class="badge">Finalizado</span>
+              </article>
+            </li>
+          }
+        </ul>
+      } @else {
+        <p class="no-shift">No tienes turnos finalizados.</p>
+      }
+    </div>
+  }
 </section>

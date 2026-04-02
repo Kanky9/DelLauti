@@ -10,62 +10,133 @@
     </div>
 
     <div class="cont">
-        <form [formGroup]="shiftForm" (ngSubmit)="saveShifts()">
+        <header class="page-header">
+            <h2>Crear turnos</h2>
+            <p>Defini dias y bloques horarios para publicar disponibilidad de forma rapida.</p>
+        </header>
 
-            <div>
-                <h2>
-                    Selecciona los días
-                </h2>
-            </div>
+        <form [formGroup]="shiftForm" (ngSubmit)="saveShifts()" class="shift-form">
+            <div class="grid-layout">
+                <section class="panel">
+                    <h3>1. Elegi los dias</h3>
+                    <p class="panel-hint">Podes seleccionar varias fechas desde el calendario.</p>
 
-            <!-- Selector de días con Angular Material -->
-            <mat-card class="demo-inline-calendar-card">
-                <mat-calendar [(selected)]="newDay" (selectedChange)="addDay(newDay)"></mat-calendar>
-            </mat-card>
-            <!-- <p>Fecha seleccionada: {{ newDay | date: 'fullDate':'':'es-ES' }}</p> -->
+                    <mat-card class="demo-inline-calendar-card">
+                        <mat-calendar [(selected)]="newDay" (selectedChange)="addDay($event)"></mat-calendar>
+                    </mat-card>
 
-            <!-- Mostrar la lista de días seleccionados -->
-            @if(daysSelected().length > 0){
-                <h3>Días Seleccionados</h3>
-                <ul>
-                    @for( day of daysSelected(); track day; let i = $index){
-                    <li>
-                        {{ day | date: 'mediumDate':'':'es-ES' }}
-                        <button type="button" (click)="deleteDay(i)">Eliminar</button>
-                    </li>
+                    @if(daysSelected().length > 0){
+                        <p class="selection-summary">
+                            {{ daysSelected().length }} dia(s) seleccionado(s)
+                        </p>
+                        <ul class="selection-list">
+                            @for(day of daysSelected(); track day.getTime(); let i = $index){
+                                <li>
+                                    <span>{{ day | date: 'fullDate':'':'es-ES' }}</span>
+                                    <button type="button" class="chip-delete" (click)="deleteDay(i)">Quitar</button>
+                                </li>
+                            }
+                        </ul>
+                    } @else {
+                        <p class="empty-state">Todavia no seleccionaste dias.</p>
                     }
-                </ul>
-            }
+                </section>
 
-            <div class="cont-schedule">
-                <nav>
-                    <label for="scheduleStart">Hora de inicio:</label>
-                    <input type="time" formControlName="scheduleStart">
-                </nav>
-             
-                <nav>
-                    <label for="scheduleEnd">Hora de fin:</label>
-                    <input type="time" formControlName="scheduleEnd">
-                </nav>
+                <section class="panel">
+                    <h3>2. Carga los horarios</h3>
+                    <p class="panel-hint">Podes cargar turnos de forma manual o por rango con intervalo fijo.</p>
+
+                    <div class="mode-switch">
+                        <button
+                            type="button"
+                            [class.active]="scheduleMode === 'manual'"
+                            (click)="setScheduleMode('manual')">
+                            Manual
+                        </button>
+                        <button
+                            type="button"
+                            [class.active]="scheduleMode === 'range'"
+                            (click)="setScheduleMode('range')">
+                            Por rango
+                        </button>
+                    </div>
+
+                    @if(scheduleMode === 'manual'){
+                        <div class="cont-schedule">
+                            <label class="time-field">
+                                <span>Hora de inicio</span>
+                                <input type="time" formControlName="scheduleStart">
+                            </label>
+
+                            <label class="time-field">
+                                <span>Hora de fin</span>
+                                <input type="time" formControlName="scheduleEnd">
+                            </label>
+                        </div>
+
+                        <button
+                            class="button-schedule"
+                            type="button"
+                            (click)="addSchedules()"
+                            [disabled]="!shiftForm.get('scheduleStart')?.value || !shiftForm.get('scheduleEnd')?.value">
+                            Agregar horario manual
+                        </button>
+                    } @else {
+                        <div class="cont-range">
+                            <label class="time-field">
+                                <span>Desde</span>
+                                <input type="time" formControlName="rangeStart">
+                            </label>
+
+                            <label class="time-field">
+                                <span>Hasta</span>
+                                <input type="time" formControlName="rangeEnd">
+                            </label>
+
+                            <label class="time-field time-field--duration">
+                                <span>Duracion de turno (min)</span>
+                                <input type="number" min="5" step="5" formControlName="slotDuration">
+                            </label>
+                        </div>
+
+                        <button
+                            class="button-schedule"
+                            type="button"
+                            (click)="addSchedulesFromRange()"
+                            [disabled]="!shiftForm.get('rangeStart')?.value || !shiftForm.get('rangeEnd')?.value || !shiftForm.get('slotDuration')?.value">
+                            Generar horarios del rango
+                        </button>
+
+                        <p class="range-tip">
+                            Ejemplo: 10:00 a 13:00 cada 30 min, y luego 16:00 a 21:00 cada 40 min.
+                        </p>
+                    }
+
+                    @if(schedules.length > 0){
+                        <p class="selection-summary">
+                            {{ schedules.length }} horario(s) cargado(s)
+                        </p>
+                        <ul class="selection-list">
+                            @for(schedule of schedules; track schedule.inicio + '-' + schedule.fin; let i = $index){
+                                <li>
+                                    <span>{{ schedule.inicio }} - {{ schedule.fin }}</span>
+                                    <button type="button" class="chip-delete" (click)="deleteSchedules(i)">Quitar</button>
+                                </li>
+                            }
+                        </ul>
+                    } @else {
+                        <p class="empty-state">Aun no agregaste horarios.</p>
+                    }
+                </section>
             </div>
-
-            <button class="button-schedule" type="button" (click)="addSchedules()">Agregar horario</button>
-
-            <!-- Mostrar la lista de horarios agregados -->
-            @if(schedules.length > 0){
-                <h3>Horarios Seleccionados</h3>
-                <ul>
-                    @for(schedule of schedules; track schedule; let i = $index){  
-                        <li>
-                            {{ schedule.inicio }} - {{ schedule.fin }}
-                            <button type="button" (click)="deleteSchedules(i)">Eliminar</button>
-                        </li>
-                    } 
-                </ul>
-            }
 
             <nav class="cont-button">
-               <button class="button" type="submit">Guardar turnos</button> 
+                <button
+                    class="button"
+                    type="submit"
+                    [disabled]="schedules.length === 0 || daysSelected().length === 0">
+                    Guardar turnos
+                </button>
             </nav>
         </form>
     </div>

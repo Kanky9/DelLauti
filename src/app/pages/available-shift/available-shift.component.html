@@ -4,36 +4,53 @@
             <i class="fa fa-arrow-left"></i>
         </a>
     </div>
-    
+
     <div class="cont">
-        <h2>Reservar Turno</h2>
-        <h5>Selecciona un día para ver los horarios disponibles</h5>
+        <header class="page-header">
+            <h2>Reservar turno</h2>
+            <p>Elegi un dia y luego toca el horario que quieras reservar.</p>
+        </header>
 
-        <!-- Selector de días para ver turnos disponibles -->
-        <mat-card class="demo-inline-calendar-card">
-            <mat-calendar [(selected)]="selectedDay" (selectedChange)="searchShiftsAvailable($event)"></mat-calendar>
-        </mat-card>
+        <div class="layout">
+            <section class="panel panel-calendar">
+                <h3>Calendario</h3>
+                <mat-card class="demo-inline-calendar-card">
+                    <mat-calendar [(selected)]="selectedDay" (selectedChange)="searchShiftsAvailable($event)"></mat-calendar>
+                </mat-card>
+            </section>
 
-        <!-- Mostrar la lista de turnos disponibles -->
-        @if(shiftsAvailable().length > 0){
-            <h3>Selecciona un horario</h3>
-            <ul>    
-                @for(shift of shiftsAvailable(); track shift){
-                    
-                    <li (click)="confirmBooking(shift)">
-                        <div class="button-text">
-                            <span>{{ shift.scheduleStart }}</span>
-                        </div>
-                    </li>
+            <section class="panel panel-slots">
+                <h3>Horarios</h3>
+
+                @if(selectedDay){
+                    <p class="selected-day">
+                        Disponibilidad para <strong>{{ selectedDay | date: 'fullDate':'':'es-ES' }}</strong>
+                    </p>
+                } @else {
+                    <p class="selected-day">Selecciona un dia para ver disponibilidad.</p>
                 }
-            </ul>
-        }
 
-        <div class="no-shift">
-            @if(shiftsAvailable().length === 0){
-                <p>No hay turnos disponibles para este día</p>
-            }
+                @if(shiftsAvailable().length > 0){
+                    <ul class="slots-grid">
+                        @for(shift of shiftsAvailable(); track trackShift($index, shift)){
+                            <li>
+                                <button type="button" (click)="confirmBooking(shift)">
+                                    <span class="slot-time">{{ shift.scheduleStart }} - {{ shift.scheduleEnd }}</span>
+                                    <span class="slot-action">Reservar</span>
+                                </button>
+                            </li>
+                        }
+                    </ul>
+                } @else {
+                    <div class="no-shift">
+                        @if(selectedDay){
+                            <p>No hay turnos disponibles para este dia.</p>
+                        } @else {
+                            <p>Primero elige un dia para consultar turnos.</p>
+                        }
+                    </div>
+                }
+            </section>
         </div>
     </div>
-
 </section>

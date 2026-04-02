@@ -5,81 +5,98 @@
         </a>
     </div>
 
-    <div class="cont-h1">
-        <h1>Turnos</h1>
-    </div>
+    <header class="cont-h1">
+        <h1>Administracion de turnos</h1>
+        <p>Gestiona reservas activas, historial y disponibilidad desde un solo lugar.</p>
+    </header>
 
     <div class="menu">
-        <button (click)="showReserved()" [class.active]="currentView() === 'reserved'">Reservados</button>
-        <button (click)="showFinalized()" [class.active]="currentView() === 'finalized'">Finalizados</button>
-        <button (click)="showNotReserved()" [class.active]="currentView() === 'notReserved'">No Reservados</button>
+        <button type="button" (click)="showReserved()" [class.active]="currentView() === 'reserved'">
+            <span>Reservados</span>
+            <strong>{{ shiftsReserved().length }}</strong>
+        </button>
+
+        <button type="button" (click)="showFinalized()" [class.active]="currentView() === 'finalized'">
+            <span>Finalizados</span>
+            <strong>{{ shiftsFinalized().length }}</strong>
+        </button>
+
+        <button type="button" (click)="showNotReserved()" [class.active]="currentView() === 'notReserved'">
+            <span>No reservados</span>
+            <strong>{{ shiftsNotReserved().length }}</strong>
+        </button>
+    </div>
+
+    <div class="view-header">
+        <h2>{{ currentViewLabel() }}</h2>
+        <p>{{ currentViewDescription() }}</p>
+
+        <div class="filters">
+            <label class="filter-field filter-field--search">
+                <span>Buscar</span>
+                <input
+                    type="search"
+                    placeholder="Cliente, email, horario o dia"
+                    [value]="filterQuery()"
+                    (input)="onFilterQueryInput($event)">
+            </label>
+
+            <label class="filter-field">
+                <span>Fecha</span>
+                <input
+                    type="date"
+                    [value]="filterDate()"
+                    (input)="onFilterDateInput($event)">
+            </label>
+
+            <button
+                type="button"
+                class="clear-filters"
+                (click)="clearFilters()"
+                [disabled]="!hasActiveFilters()">
+                Limpiar filtros
+            </button>
+        </div>
+
+        <p class="results-info">
+            Mostrando {{ filteredCurrentShifts().length }} de {{ currentShifts().length }} turno(s)
+        </p>
     </div>
 
     <div class="turnero-admin">
+        @if(filteredCurrentShifts().length > 0){
+            <ul>
+                @for(shift of filteredCurrentShifts(); track trackShift($index, shift)){
+                    <li>
+                        <mat-card
+                            class="shift-card"
+                            [class.shift-card--reserved]="currentView() === 'reserved'"
+                            [class.shift-card--finalized]="currentView() === 'finalized'"
+                            [class.shift-card--free]="currentView() === 'notReserved'">
+                            <header class="shift-card__header">
+                                <h3>{{ shift.day | date: 'fullDate' }}</h3>
+                                <span class="shift-time">{{ shift.scheduleStart }} - {{ shift.scheduleEnd }}</span>
+                            </header>
 
-        @if(currentView() === 'reserved'){
-            <div>
-                <!-- Mostrar la lista de turnos reservados -->
-                @if(shiftsReserved().length > 0){
-                    <ul>
-                        @for(shift of shiftsReserved(); track shift){
-                            <li>
-                                <mat-card class="shift-card">
-                                    <h3>Día: {{ shift.day | date: 'fullDate' }}</h3>
-                                    <p> <span>Horario:</span> {{ shift.scheduleStart }} - {{ shift.scheduleEnd }}</p>
-                                    <p><span>Cliente:</span> {{ shift.userName }}</p>
-                                    <p><span>Email:</span> {{ shift.userEmail }}</p>
-                                </mat-card>
-                            </li>
-                        }
-                    </ul>
-                } @else {
-                    <p class="no-shift">No hay turnos reservados por el momento.</p>
+                            @if(currentView() !== 'notReserved'){
+                                <div class="shift-card__client">
+                                    <p><span>Cliente</span>{{ shift.userName || 'Sin nombre' }}</p>
+                                    <p><span>Email</span>{{ shift.userEmail || 'Sin email' }}</p>
+                                </div>
+                            } @else {
+                                <p class="shift-card__available">Este turno esta disponible para reservar.</p>
+                                <button class="delete" type="button" mat-button (click)="onDeleteShift(shift)">Eliminar turno</button>
+                            }
+                        </mat-card>
+                    </li>
                 }
-            </div>
-        }
-
-        @if(currentView() === 'finalized'){
-            <div>
-                <!-- Mostrar la lista de turnos finalizados -->
-                @if(shiftsFinalized().length > 0){
-                    <ul>
-                        @for(shift of shiftsFinalized(); track shift){
-                            <li>
-                                <mat-card class="shift-card">
-                                    <h3><span>Día:</span> {{ shift.day | date: 'fullDate' }}</h3>
-                                    <p><span>Horario:</span> {{ shift.scheduleStart }} - {{ shift.scheduleEnd }}</p>
-                                    <p><span>Cliente:</span> {{ shift.userName }}</p>
-                                    <p><span>Email:</span> {{ shift.userEmail }}</p>
-                                </mat-card>
-                            </li>
-                        }
-                    </ul>
-                } @else {
-                    <p class="no-shift">No hay turnos finalizados por el momento.</p>
-                }
-            </div>
-        }
-
-        @if(currentView() === 'notReserved'){
-            <div>
-                <!-- Mostrar la lista de turnos no reservados -->
-                @if(shiftsNotReserved().length > 0){
-                    <ul>
-                        @for(shift of shiftsNotReserved(); track shift){
-                            <li>
-                                <mat-card class="shift-card">
-                                    <h3><span>Día:</span> {{ shift.day | date: 'fullDate' }}</h3>
-                                    <p><span>Horario:</span> {{ shift.scheduleStart }} - {{ shift.scheduleEnd }}</p>
-                                    <button class="delete" mat-button (click)="onDeleteShift(shift)">Eliminar</button>
-                                </mat-card>
-                            </li>
-                        }
-                    </ul>
-                } @else {
-                    <p class="no-shift">No hay turnos no reservados por el momento.</p>
-                }
-            </div>
+            </ul>
+        } @else {
+            @if(currentShifts().length === 0){
+                <p class="no-shift">{{ emptyMessage() }}</p>
+            } @else {
+                <p class="no-shift">No hay resultados con los filtros aplicados.</p>
+            }
         }
     </div>
 </section>
