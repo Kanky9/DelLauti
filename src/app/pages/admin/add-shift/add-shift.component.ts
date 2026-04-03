@@ -55,7 +55,7 @@ import { LoadingComponent } from '../../../shared/utils/loading/loading.componen
 })
 export class AddShiftComponent implements OnInit {
 
-  scheduleMode: 'manual' | 'range' = 'manual';
+  scheduleMode: 'manual' | 'range' = 'range';
   shiftForm!: FormGroup;
   schedules: { inicio: string; fin: string }[] = [];
   daysSelected: WritableSignal<Date[]> = signal<Date[]>([]);
