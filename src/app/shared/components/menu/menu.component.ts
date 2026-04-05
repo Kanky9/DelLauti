@@ -4,6 +4,7 @@ import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
 import { UtilsService } from '../../../services/utils.service';
 import { LoadingComponent } from '../../utils/loading/loading.component';
+import { AdminNotificationService } from '../../../services/admin-notification.service';
 
 @Component({
   selector: 'app-menu',
@@ -22,14 +23,17 @@ export class MenuComponent implements OnInit{
   isClicked: boolean = false;
   isAuthenticated: Signal<boolean>;
   isAdmin: Signal<boolean>;
+  unreadAdminNotifications: Signal<number>;
   
   readonly _utilSvc = inject(UtilsService);
   private _authService = inject(AuthService);
+  private _adminNotificationService = inject(AdminNotificationService);
   private router = inject(Router);
 
   constructor() {
     this.isAuthenticated = computed(() => !!this._authService.user$());
     this.isAdmin = computed(() => this._authService.user$()?.admin === true);
+    this.unreadAdminNotifications = computed(() => this._adminNotificationService.unreadCount());
   }
 
   ngOnInit(): void {}

@@ -8,6 +8,7 @@ import { RouterLink } from '@angular/router';
 import { Timestamp } from 'firebase/firestore';
 import localeEs from '@angular/common/locales/es';
 import { UtilsService } from '../../../services/utils.service';
+import { AdminNotificationService } from '../../../services/admin-notification.service';
 
 registerLocaleData(localeEs);
 
@@ -118,6 +119,7 @@ export class ShiftAdminComponent implements OnInit {
   private _shiftService = inject(ShiftService);
   private _authService = inject(AuthService);
   private _utilsService = inject(UtilsService);
+  private _adminNotificationService = inject(AdminNotificationService);
 
   ngOnInit(): void {
     const user = this._authService.getUser;
@@ -127,6 +129,7 @@ export class ShiftAdminComponent implements OnInit {
       return;
     }
 
+    void this._adminNotificationService.markAllAsSeen(user.id);
     this.loadShifts();
     this._shiftService.deleteExpiredShifts();
   }

@@ -28,7 +28,12 @@
 
                     @if(isAdmin()){
                         <li class="items__li">
-                            <a [routerLink]="['/shift-admin']" routerLinkActive="router-link-active" class="items">Administrar turnos</a>
+                            <a [routerLink]="['/shift-admin']" routerLinkActive="router-link-active" class="items items--admin-link">
+                                <span>Administrar turnos</span>
+                                @if(unreadAdminNotifications() > 0){
+                                    <span class="admin-badge">{{ unreadAdminNotifications() }}</span>
+                                }
+                            </a>
                         </li>
                     }
 
@@ -96,7 +101,12 @@
 
                 @if(isAdmin()){
                    <li class="nav-item">
-                        <a class="nav-link active" routerLink="/shift-admin">Administrar turnos</a>
+                        <a class="nav-link nav-link--admin active" routerLink="/shift-admin">
+                            <span>Administrar turnos</span>
+                            @if(unreadAdminNotifications() > 0){
+                                <span class="admin-badge">{{ unreadAdminNotifications() }}</span>
+                            }
+                        </a>
                     </li>
                 }
 

@@ -1,8 +1,11 @@
-import { Component, inject } from '@angular/core';
+import { Component, effect, inject } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { MenuComponent } from "./shared/components/menu/menu.component";
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { CommonModule } from '@angular/common';
+import { AuthService } from './services/auth.service';
+import { AdminNotificationService } from './services/admin-notification.service';
+import { PushNotificationService } from './services/push-notification.service';
 
 
 @Component({
@@ -22,4 +25,19 @@ export class AppComponent {
   title = 'DelLauti';
 
   router = inject(Router);
+  private _authService = inject(AuthService);
+  private _adminNotificationService = inject(AdminNotificationService);
+  private _pushNotificationService = inject(PushNotificationService);
+
+  private _adminNotificationsEffect = effect(() => {
+    const user = this._authService.user$();
+
+    if (user?.admin) {
+      this._adminNotificationService.startListening(user.id);
+    } else {
+      this._adminNotificationService.stopListening();
+    }
+
+    void this._pushNotificationService.syncForUser(user);
+  });
 }

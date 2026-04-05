@@ -129,7 +129,11 @@ export class AvailableShiftComponent implements OnInit {
     if (usuario) {
       const clienteId = usuario.id;
 
-      this._shiftService.bookShift(turno.id!, clienteId).then(() => {
+      this._shiftService.bookShift(turno.id!, clienteId, {
+        day: turno.day,
+        scheduleStart: turno.scheduleStart,
+        scheduleEnd: turno.scheduleEnd
+      }).then(() => {
         const dialogRef = this._utilSvc.showMessageDialog(
           'Turno reservado correctamente',
           `Turno: ${turno.scheduleStart} - ${turno.scheduleEnd} - ${turno.day.toLocaleDateString('es-ES', {

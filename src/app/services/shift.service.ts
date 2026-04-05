@@ -1,7 +1,8 @@
 import { inject, Injectable, signal } from '@angular/core';
-import { addDoc, collection, doc, Firestore, getDocs, query, Timestamp, updateDoc, where, deleteDoc } from '@angular/fire/firestore';
+import { addDoc, collection, deleteDoc, doc, Firestore, getDoc, getDocs, query, Timestamp, updateDoc, where } from '@angular/fire/firestore';
 import { Shift } from '../models/shift.interface';
 import { AuthService } from './auth.service';
+import { AdminNotificationService } from './admin-notification.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,6 +11,7 @@ export class ShiftService {
 
   private _firestore = inject(Firestore);
   private _authService = inject(AuthService);
+  private _adminNotificationService = inject(AdminNotificationService);
 
   public shift = signal<Shift[]>([]);
 
@@ -25,6 +27,24 @@ export class ShiftService {
       dateA.getMonth() === dateB.getMonth() &&
       dateA.getDate() === dateB.getDate()
     );
+  }
+
+  private coerceToDate(value: unknown): Date {
+    if (value instanceof Date) {
+      return value;
+    }
+
+    if (value instanceof Timestamp) {
+      return value.toDate();
+    }
+
+    const valueWithToDate = value as { toDate?: () => Date };
+    if (value && typeof value === 'object' && typeof valueWithToDate.toDate === 'function') {
+      return valueWithToDate.toDate();
+    }
+
+    const parsedDate = new Date(value as string | number | Date);
+    return Number.isNaN(parsedDate.getTime()) ? new Date() : parsedDate;
   }
 
   // * Metodo para guardar turnos
@@ -105,8 +125,12 @@ export class ShiftService {
   }
 
   // * Metodo para reservar un turno
-  async bookShift(shiftId: string, userId: string) {
+  async bookShift(shiftId: string, userId: string, shiftSummary?: Pick<Shift, 'day' | 'scheduleStart' | 'scheduleEnd'>) {
     const shiftDoc = doc(this._firestore, `shifts/${shiftId}`);
+
+    const shiftDocSnapshot = shiftSummary ? null : await getDoc(shiftDoc);
+    const shiftDocData = shiftDocSnapshot?.exists() ? shiftDocSnapshot.data() as Shift : null;
+
     await updateDoc(shiftDoc, {
       available: false,
       userId: userId
@@ -115,6 +139,27 @@ export class ShiftService {
     this.shift.update((prev) =>
       prev.map((shift) => (shift.id === shiftId ? { ...shift, available: false, userId: userId } : shift))
     );
+
+    const userInfo = await this._authService.getUserInfo(userId);
+
+    const dayRaw = shiftSummary?.day ?? shiftDocData?.day ?? new Date();
+    const shiftDay = this.coerceToDate(dayRaw);
+    const scheduleStart = shiftSummary?.scheduleStart ?? shiftDocData?.scheduleStart ?? '';
+    const scheduleEnd = shiftSummary?.scheduleEnd ?? shiftDocData?.scheduleEnd ?? '';
+
+    try {
+      await this._adminNotificationService.createShiftBookedNotification({
+        shiftId,
+        customerId: userId,
+        customerName: userInfo?.name ?? 'Cliente',
+        customerEmail: userInfo?.email ?? '',
+        shiftDay,
+        scheduleStart,
+        scheduleEnd
+      });
+    } catch (error) {
+      console.error('No se pudo crear la notificacion de reserva para admin:', error);
+    }
   }
 
   // * Metodo para obtener turnos reservados
