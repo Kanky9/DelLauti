@@ -5,7 +5,6 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { CommonModule } from '@angular/common';
 import { AuthService } from './services/auth.service';
 import { AdminNotificationService } from './services/admin-notification.service';
-import { PushNotificationService } from './services/push-notification.service';
 
 
 @Component({
@@ -27,17 +26,17 @@ export class AppComponent {
   router = inject(Router);
   private _authService = inject(AuthService);
   private _adminNotificationService = inject(AdminNotificationService);
-  private _pushNotificationService = inject(PushNotificationService);
 
   private _adminNotificationsEffect = effect(() => {
     const user = this._authService.user$();
 
-    if (user?.admin) {
-      this._adminNotificationService.startListening(user.id);
-    } else {
-      this._adminNotificationService.stopListening();
-    }
-
-    void this._pushNotificationService.syncForUser(user);
+    // Evita NG0600: no hacemos set/update de signals dentro del contexto directo del effect.
+    queueMicrotask(() => {
+      if (user?.admin) {
+        this._adminNotificationService.startListening(user.id);
+      } else {
+        this._adminNotificationService.stopListening();
+      }
+    });
   });
 }

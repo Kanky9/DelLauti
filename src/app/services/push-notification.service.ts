@@ -11,7 +11,7 @@ export class PushNotificationService {
   private _firestore = inject(Firestore);
 
   private _messagingPromise: Promise<Messaging | null> | null = null;
-  private _permissionRequested = false;
+  private _permissionRequestPromise: Promise<NotificationPermission> | null = null;
   private _registeredAdminId: string | null = null;
   private _registeredToken: string | null = null;
   private _isSyncInProgress = false;
@@ -37,6 +37,7 @@ export class PushNotificationService {
 
   private async registerAdminDevice(adminId: string): Promise<void> {
     if (!this.isWebPushAvailable()) {
+      console.warn('Push web no soportado por este navegador/dispositivo.');
       return;
     }
 
@@ -48,8 +49,11 @@ export class PushNotificationService {
     const messaging = await this.getMessagingInstance();
 
     if (!messaging) {
+      console.warn('Firebase Messaging no soportado en este entorno.');
       return;
     }
+
+    console.info('Estado actual del permiso de notificaciones:', Notification.permission);
 
     if (Notification.permission === 'denied') {
       console.warn('Permiso de notificaciones bloqueado por el navegador.');
@@ -57,27 +61,31 @@ export class PushNotificationService {
     }
 
     if (Notification.permission !== 'granted') {
-      if (this._permissionRequested) {
-        return;
-      }
-
-      this._permissionRequested = true;
-      const permission = await Notification.requestPermission();
+      const permission = await this.requestPermission();
 
       if (permission !== 'granted') {
+        console.warn('El permiso de notificaciones no fue otorgado. Estado:', permission);
         return;
       }
     }
 
-    const token = await getToken(messaging, {
-      vapidKey: environment.messagingVapidKey
-    });
+    let token: string;
+    try {
+      token = await getToken(messaging, {
+        vapidKey: environment.messagingVapidKey
+      });
+    } catch (error) {
+      console.error('Error obteniendo token FCM:', error);
+      return;
+    }
 
     if (!token) {
+      console.warn('No se obtuvo token FCM (token vacio).');
       return;
     }
 
     if (this._registeredAdminId === adminId && this._registeredToken === token) {
+      console.info('Token FCM ya registrado para este admin.');
       return;
     }
 
@@ -86,6 +94,8 @@ export class PushNotificationService {
       { pushTokens: arrayUnion(token) },
       { merge: true }
     );
+
+    console.info('Token FCM guardado en Firestore para admin:', adminId);
 
     if (this._registeredAdminId && this._registeredToken && this._registeredAdminId !== adminId) {
       await this.removeTokenFromAdmin(this._registeredAdminId, this._registeredToken);
@@ -133,5 +143,16 @@ export class PushNotificationService {
     return typeof window !== 'undefined' &&
       'Notification' in window &&
       'serviceWorker' in navigator;
+  }
+
+  private async requestPermission(): Promise<NotificationPermission> {
+    if (!this._permissionRequestPromise) {
+      this._permissionRequestPromise = Notification.requestPermission()
+        .finally(() => {
+          this._permissionRequestPromise = null;
+        });
+    }
+
+    return this._permissionRequestPromise;
   }
 }

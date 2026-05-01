@@ -4,6 +4,7 @@ import { doc, Firestore, getDoc, setDoc } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
 import { UserModel } from '../models/user.interface';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { PushNotificationService } from './push-notification.service';
 
 @Injectable({
   providedIn: 'root'
@@ -14,6 +15,7 @@ export class AuthService {
   private _firestore = inject(Firestore);
   private _router = inject(Router);
   private _snackBar = inject(MatSnackBar);
+  private _pushNotificationService = inject(PushNotificationService);
 
   private _googleProvider = new GoogleAuthProvider();
 
@@ -29,8 +31,10 @@ export class AuthService {
       if (firebaseUser) {
         const userData = await this.getUserDataFromFirestore(firebaseUser);
         this.user.set(userData);
+        void this._pushNotificationService.syncForUser(userData);
       } else {
         this.user.set(null);
+        void this._pushNotificationService.syncForUser(null);
       }
     });
   }
@@ -82,6 +86,7 @@ export class AuthService {
 
       const userData = await this.getUserDataFromFirestore(firebaseUser);
       this.user.set(userData);
+      void this._pushNotificationService.syncForUser(userData);
 
       this._snackBar.open(`Bienvenido ${userData.name}`, 'Cerrar', {
         duration: 3000,
@@ -121,6 +126,7 @@ export class AuthService {
       await setDoc(doc(this._firestore, `users/${firebaseUser.uid}`), newUser);
 
       this.user.set(newUser);
+      void this._pushNotificationService.syncForUser(newUser);
 
       this._snackBar.open('Usuario registrado con éxito. Ahora puedes iniciar sesión con tu cuenta.', 'Cerrar', {
         duration: 3000,
@@ -146,6 +152,7 @@ export class AuthService {
 
       const userData = await this.getUserDataFromFirestore(firebaseUser);
       this.user.set(userData);
+      void this._pushNotificationService.syncForUser(userData);
 
       this._snackBar.open(`Bienvenido ${userData.name}`, 'Cerrar', {
         duration: 3000,
@@ -168,6 +175,7 @@ export class AuthService {
       const userName = this.user()?.name || 'Usuario';
       await signOut(this._auth);
       this.user.set(null);
+      void this._pushNotificationService.syncForUser(null);
 
       this._snackBar.open(`Adiós ${userName}`, 'Cerrar', {
         duration: 3000,
